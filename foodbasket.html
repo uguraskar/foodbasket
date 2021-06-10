@@ -14273,6 +14273,8 @@ a.anchor-link {
 <span class="n">db_port</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;db_port&quot;</span><span class="p">)</span>
 <span class="n">website</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;website&quot;</span><span class="p">)</span>
 <span class="n">city_link</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;city_link&quot;</span><span class="p">)</span>
+<span class="n">chrome_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;chrome_path&quot;</span><span class="p">)</span>
+<span class="n">selenium_chrome_driver_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;selenium_chrome_driver_path&quot;</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14291,6 +14293,7 @@ a.anchor-link {
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">datetime</span>
 
 <span class="n">conn_string</span> <span class="o">=</span> <span class="s1">&#39;host=</span><span class="si">{pghost}</span><span class="s1"> port=</span><span class="si">{pgport}</span><span class="s1"> dbname=</span><span class="si">{pgdatabase}</span><span class="s1"> user=</span><span class="si">{pguser}</span><span class="s1"> password=</span><span class="si">{pgpassword}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pgdatabase</span><span class="o">=</span><span class="n">db_name</span><span class="p">,</span><span class="n">pguser</span><span class="o">=</span><span class="n">db_username</span><span class="p">,</span><span class="n">pgpassword</span><span class="o">=</span><span class="n">db_password</span><span class="p">,</span><span class="n">pghost</span><span class="o">=</span><span class="n">db_host</span><span class="p">,</span><span class="n">pgport</span><span class="o">=</span><span class="n">db_port</span><span class="p">)</span>
 <span class="n">conn</span><span class="o">=</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">conn_string</span><span class="p">)</span>
@@ -14313,7 +14316,7 @@ a.anchor-link {
     <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>    
     <span class="k">try</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">tuples</span><span class="p">:</span>
-            <span class="n">query</span>  <span class="o">=</span> <span class="s2">&quot;&quot;&quot;INSERT INTO &quot;</span><span class="si">{schema}</span><span class="s2">&quot;.&quot;</span><span class="si">{table}</span><span class="s2">&quot;(</span><span class="si">{cols}</span><span class="s2">) VALUES (</span><span class="si">{values}</span><span class="s2">)&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="n">tup</span><span class="p">)))</span>
+            <span class="n">query</span>  <span class="o">=</span> <span class="s2">&quot;&quot;&quot;INSERT INTO &quot;</span><span class="si">{schema}</span><span class="s2">&quot;.&quot;</span><span class="si">{table}</span><span class="s2">&quot;(</span><span class="si">{cols}</span><span class="s2">) VALUES (</span><span class="si">{values}</span><span class="s2">) ON CONFLICT DO NOTHING&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="n">tup</span><span class="p">)))</span>
             <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
             <span class="n">conn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">DatabaseError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
@@ -14327,7 +14330,7 @@ a.anchor-link {
     <span class="k">if</span><span class="p">(</span><span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">):</span>
         <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&#39;::timestamp&quot;</span><span class="p">)</span>
     <span class="k">if</span><span class="p">(</span><span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">):</span>
-        <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
     <span class="k">if</span><span class="p">(</span><span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span><span class="p">):</span>
         <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&#39;::date&quot;</span><span class="p">)</span>
     <span class="k">if</span><span class="p">(</span><span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;numeric&#39;</span><span class="p">):</span>
@@ -14347,27 +14350,46 @@ a.anchor-link {
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">bs4</span> <span class="kn">import</span> <span class="n">BeautifulSoup</span>
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">check_if_table_exists</span><span class="p">(</span><span class="s1">&#39;ODS&#39;</span><span class="p">,</span><span class="s1">&#39;EXT_FB_RESTAURANT&#39;</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Table ODS.EXT_FB_RESTAURANT already exists.&#39;</span><span class="p">)</span>   
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    CREATE TABLE &quot;ODS&quot;.&quot;EXT_FB_RESTAURANT&quot;</span>
+<span class="s2">    (</span>
+<span class="s2">    &quot;RESTAURANT_ID&quot; text NOT NULL,</span>
+<span class="s2">    &quot;RESTAURANT_NAME&quot; text,</span>
+<span class="s2">    &quot;RESTAURANT_LINK&quot; text,    </span>
+<span class="s2">    CONSTRAINT &quot;RESTAURANT_ID&quot; UNIQUE (&quot;RESTAURANT_ID&quot;)</span>
+<span class="s2">    );</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;COMMIT;&#39;</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Table ODS.EXT_FB_RESTAURANT created in </span><span class="si">{execute_time}</span><span class="s2"> seconds.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">execute_time</span><span class="o">=</span><span class="n">end_time</span><span class="o">-</span><span class="n">start_time</span><span class="p">))</span>
 
-<span class="n">city_req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">city_link</span><span class="p">)</span>
-<span class="n">city_soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">city_req</span><span class="o">.</span><span class="n">content</span><span class="p">,</span><span class="s2">&quot;lxml&quot;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">restaurant</span> <span class="ow">in</span> <span class="n">city_soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span><span class="s2">&quot;ys-reslist&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span><span class="s2">&quot;restaurantName&quot;</span><span class="p">}):</span>
-    <span class="n">restaurant_name</span> <span class="o">=</span> <span class="n">restaurant</span><span class="o">.</span><span class="n">span</span><span class="o">.</span><span class="n">text</span>
-    <span class="n">restaurant_sublink</span> <span class="o">=</span> <span class="n">restaurant</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">)</span>
-    <span class="n">restaurant_link</span> <span class="o">=</span> <span class="n">website</span><span class="o">+</span><span class="n">restaurant_sublink</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">restaurant_link</span><span class="p">)</span>
-    <span class="n">restaurant_req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">restaurant_link</span><span class="p">)</span>
-    <span class="n">restaurant_soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">restaurant_req</span><span class="o">.</span><span class="n">content</span><span class="p">,</span><span class="s2">&quot;lxml&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">category_soup</span> <span class="ow">in</span> <span class="n">restaurant_soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;div[class*=restaurantDetailBox]&quot;</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">category_name</span> <span class="o">=</span> <span class="n">category_soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="k">continue</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">restaurant_soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span><span class="s2">&quot;listBody&quot;</span><span class="p">}))</span>
-    <span class="n">t1</span> <span class="o">=</span> <span class="n">restaurant_soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span><span class="s2">&quot;listBody&quot;</span><span class="p">})</span>
-    <span class="k">break</span>  
+<span class="k">if</span><span class="p">(</span><span class="n">check_if_table_exists</span><span class="p">(</span><span class="s1">&#39;ODS&#39;</span><span class="p">,</span><span class="s1">&#39;EXT_FB_MENU&#39;</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Table ODS.EXT_FB_MENU already exists.&#39;</span><span class="p">)</span>   
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    CREATE TABLE &quot;ODS&quot;.&quot;EXT_FB_MENU&quot;</span>
+<span class="s2">    (</span>
+<span class="s2">    &quot;PRODUCT_ID&quot; text NOT NULL,</span>
+<span class="s2">    &quot;RESTAURANT_ID&quot; text,</span>
+<span class="s2">    &quot;CATEGORY_NAME&quot; text,</span>
+<span class="s2">    &quot;PRODUCT_NAME&quot; text,</span>
+<span class="s2">    &quot;PRODUCT_DESCRIPTION&quot; text,</span>
+<span class="s2">    &quot;PRODUCT_LISTED_PRICE&quot; text,</span>
+<span class="s2">    &quot;PRODUCT_PRICE&quot; text,</span>
+<span class="s2">    &quot;DISCOUNT&quot; boolean,</span>
+<span class="s2">    &quot;DESIGN_TYPE&quot; text,</span>
+<span class="s2">    &quot;DATE&quot; date,</span>
+<span class="s2">    CONSTRAINT &quot;PRODUCT_ID&quot; UNIQUE (&quot;PRODUCT_ID&quot;)</span>
+<span class="s2">    );</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;COMMIT;&#39;</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Table ODS.EXT_FB_MENU created in </span><span class="si">{execute_time}</span><span class="s2"> seconds.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">execute_time</span><span class="o">=</span><span class="n">end_time</span><span class="o">-</span><span class="n">start_time</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -14387,8 +14409,8 @@ a.anchor-link {
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>https://www.yemeksepeti.com/pizza-dante-sisli-ergenekon-mah-pangalti-istanbul
-&lt;/span&gt; &lt;/b&gt; &lt;/div&gt; &lt;/div&gt; &lt;/div&gt;, &lt;div class=&#34;listBody&#34;&gt; &lt;div id=&#34;ys-approved-text&#34;&gt; &lt;span class=&#34;ys-icons ys-icons-Standard-icons-info info-icon&#34;&gt;&lt;/span&gt; &lt;span class=&#34;approve-text&#34;&gt;Bu restoranın &lt;strong&gt;adres&lt;/strong&gt; ve &lt;strong&gt;onaylanmış&lt;/strong&gt; telefon bilgileri Yemeksepeti&#39;nde bulunmaktadır.&lt;/span&gt; &lt;/div&gt; &lt;/div&gt;]
+<pre>Table ODS.EXT_FB_RESTAURANT already exists.
+Table ODS.EXT_FB_MENU already exists.
 </pre>
 </div>
 </div>
@@ -14397,13 +14419,46 @@ a.anchor-link {
 
 </div>
 
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">restaurant_link</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">selenium</span> <span class="kn">import</span> <span class="n">webdriver</span>
+<span class="kn">from</span> <span class="nn">selenium.webdriver.chrome.options</span> <span class="kn">import</span> <span class="n">Options</span>
+<span class="kn">from</span> <span class="nn">selenium.webdriver.common.by</span> <span class="kn">import</span> <span class="n">By</span> 
+<span class="kn">from</span> <span class="nn">selenium.webdriver.support.ui</span> <span class="kn">import</span> <span class="n">WebDriverWait</span> 
+<span class="kn">from</span> <span class="nn">selenium.webdriver.support</span> <span class="kn">import</span> <span class="n">expected_conditions</span> <span class="k">as</span> <span class="n">EC</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">()</span>
+<span class="n">options</span><span class="o">.</span><span class="n">binary_location</span> <span class="o">=</span> <span class="n">chrome_path</span>
+
+<span class="n">restaurant_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">driver</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Chrome</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="n">executable_path</span><span class="o">=</span><span class="n">selenium_chrome_driver_path</span><span class="p">)</span>
+<span class="n">driver</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">city_link</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">25</span><span class="p">):</span>
+    <span class="n">driver</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="s2">&quot;window.scrollTo(0, document.body.scrollHeight);&quot;</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">city_restaurant_groups</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">find_elements_by_class_name</span><span class="p">(</span><span class="s2">&quot;restaurant-main-info&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">restaurant</span> <span class="ow">in</span> <span class="n">city_restaurant_groups</span><span class="p">:</span>
+    <span class="n">restaurant_name</span> <span class="o">=</span> <span class="n">restaurant</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;restaurant-display-name&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+    <span class="n">restaurant_name</span> <span class="o">=</span> <span class="n">restaurant_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;YENİ &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">restaurant_link</span> <span class="o">=</span> <span class="n">restaurant</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;restaurant-display-name&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s2">&quot;.//a&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">)</span>
+    <span class="n">restaurant_id</span> <span class="o">=</span> <span class="n">restaurant_link</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">restaurant_link</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">continue</span>
+    <span class="n">restaurant_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">restaurant_id</span><span class="p">,</span><span class="n">restaurant_name</span><span class="p">,</span><span class="n">restaurant_link</span><span class="p">])</span>
+<span class="n">restaurant_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">restaurant_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;RESTAURANT_ID&quot;</span><span class="p">,</span><span class="s2">&quot;RESTAURANT_NAME&quot;</span><span class="p">,</span><span class="s2">&quot;RESTAURANT_LINK&quot;</span><span class="p">])</span>
+
+<span class="n">df_column_conversation</span><span class="p">(</span><span class="n">restaurant_df</span><span class="p">,</span> <span class="s1">&#39;RESTAURANT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+<span class="n">df_column_conversation</span><span class="p">(</span><span class="n">restaurant_df</span><span class="p">,</span> <span class="s1">&#39;RESTAURANT_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+<span class="n">df_column_conversation</span><span class="p">(</span><span class="n">restaurant_df</span><span class="p">,</span> <span class="s1">&#39;RESTAURANT_LINK&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+<span class="n">execute_mogrify</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="n">restaurant_df</span><span class="p">,</span><span class="s2">&quot;ODS&quot;</span><span class="p">,</span><span class="s2">&quot;EXT_FB_RESTAURANT&quot;</span><span class="p">)</span>
+<span class="n">restaurant_df</span>
 </pre></div>
 
      </div>
@@ -14411,46 +14466,20 @@ a.anchor-link {
 </div>
 </div>
 
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[4]:</div>
-
-
-
-
-<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>&#39;https://www.yemeksepeti.com/pizza-dante-sisli-ergenekon-mah-pangalti-istanbul&#39;</pre>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">product_name</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span><span class="s2">&quot;getProductDetail&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span>
-<span class="n">product_desc</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span><span class="s2">&quot;product-desc&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">text</span>
-<span class="c1">#product_price = t1[0].select(&quot;div[class=product-price]&quot;)[0].select(&quot;span[class=price]&quot;)[0].text</span>
-<span class="n">product_price</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;div[class*=product-price]&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;span&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="c1">#discount_price = t1[0].select(&quot;div[class=product-price discounted]&quot;)[0].select(&quot;span[class=price]&quot;)[0].text</span>
-    <span class="n">discount_price</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;div[class*=product-price]&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;span&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span><span class="s2">&quot;price&quot;</span><span class="p">})</span>
-<span class="k">except</span><span class="p">:</span>
-    <span class="n">discount_price</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-<span class="c1">#t1[0]</span>
-<span class="n">product_price</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    SELECT</span>
+<span class="s2">    &quot;RESTAURANT_ID&quot;</span>
+<span class="s2">    FROM &quot;ODS&quot;.&quot;EXT_FB_RESTAURANT&quot; EFR</span>
+<span class="s2">    WHERE 1=1</span>
+<span class="s2">    AND NOT EXISTS(SELECT NULL FROM &quot;ODS&quot;.&quot;EXT_FB_MENU&quot; EFM WHERE EFR.&quot;RESTAURANT_ID&quot; = EFM.&quot;RESTAURANT_ID&quot;);</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+<span class="n">restaurant_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql_command</span><span class="p">,</span><span class="n">conn</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14458,43 +14487,101 @@ a.anchor-link {
 </div>
 </div>
 
-<div class="jp-Cell-outputWrapper">
-
-
-<div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
-    
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[5]:</div>
-
-
-
-
-<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain">
-<pre>&#39;94,00 TL&#39;</pre>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">category_soup</span> <span class="ow">in</span> <span class="n">restaurant_soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;div[class*=restaurantDetailBox]&quot;</span><span class="p">):</span>
-    <span class="c1">#try:</span>
-    <span class="k">for</span> <span class="n">product_soup</span> <span class="ow">in</span> <span class="n">category_soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span><span class="s2">&quot;listBody&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;li&quot;</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">product_soup</span><span class="o">.</span><span class="n">findAll</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span><span class="s2">&quot;product-info&quot;</span><span class="p">})[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;class&quot;</span><span class="p">:</span><span class="s2">&quot;getProductDetail&quot;</span><span class="p">}))</span>
-        <span class="c1">#print(product_soup)</span>
-        <span class="k">break</span>
-    <span class="c1">#except:</span>
-        <span class="c1">#continue</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">restaurant_df</span><span class="p">)):</span>
+    <span class="n">sublink</span> <span class="o">=</span> <span class="n">restaurant_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s2">&quot;RESTAURANT_ID&quot;</span><span class="p">]</span>
+    <span class="n">restaurant_link</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{website}</span><span class="s2">/</span><span class="si">{sublink}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">website</span><span class="o">=</span><span class="n">website</span><span class="p">,</span><span class="n">sublink</span><span class="o">=</span><span class="n">sublink</span><span class="p">)</span>
+    
+    <span class="n">driver</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">restaurant_link</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span><span class="p">(</span><span class="s2">&quot;sipariş verebilirsiniz.&quot;</span> <span class="ow">in</span> <span class="n">driver</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s1">&#39;//*[@id=&quot;restaurantDetail&quot;]/div/div[2]/h3&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">pass</span>
+    
+    <span class="n">menu</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s1">&#39;//*[@id=&quot;restaurant_menu&quot;]&#39;</span><span class="p">)</span>
+    <span class="n">categories</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">find_elements_by_xpath</span><span class="p">(</span><span class="s1">&#39;//*[contains(@id,&quot;menu_&quot;)]&#39;</span><span class="p">)</span>
+
+    <span class="n">menu_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">categories</span><span class="p">:</span>
+        <span class="n">category_name</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s2">&quot;.//b&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="k">for</span> <span class="n">product</span> <span class="ow">in</span> <span class="n">category</span><span class="o">.</span><span class="n">find_elements_by_xpath</span><span class="p">(</span><span class="s2">&quot;.//div[2]/ul/li&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">design_type</span> <span class="o">=</span> <span class="s2">&quot;list&quot;</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">product_id</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">find_elements_by_class_name</span><span class="p">(</span><span class="s2">&quot;getProductDetail&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s1">&#39;data-product-id&#39;</span><span class="p">)</span>
+                    <span class="n">product_name</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">find_elements_by_class_name</span><span class="p">(</span><span class="s2">&quot;getProductDetail&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">product_id</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s2">&quot;.//strong&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s1">&#39;data-product-id&#39;</span><span class="p">)</span>
+                    <span class="n">product_name</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s2">&quot;.//strong&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="n">design_type</span> <span class="o">=</span> <span class="s2">&quot;card&quot;</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">product_description</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;product-desc&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="n">product_price</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;price&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>    
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">product_description</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;productInfo&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="n">product_price</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;newPrice&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="k">if</span><span class="p">(</span><span class="ow">not</span><span class="p">(</span><span class="n">design_type</span><span class="o">==</span><span class="s2">&quot;card&quot;</span><span class="p">)):</span>
+                        <span class="n">design_type</span> <span class="o">=</span> <span class="s2">&quot;box&quot;</span>
+                <span class="n">discount</span> <span class="o">=</span> <span class="s2">&quot;TRUE&quot;</span>
+                <span class="k">try</span><span class="p">:</span>              
+                    <span class="k">if</span><span class="p">(</span><span class="n">design_type</span><span class="o">==</span><span class="s2">&quot;list&quot;</span><span class="p">):</span>
+                        <span class="n">product_listed_price</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;listed-price&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                    <span class="k">if</span><span class="p">(</span><span class="n">design_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;card&quot;</span><span class="p">,</span><span class="s2">&quot;box&quot;</span><span class="p">]):</span>
+                        <span class="n">product_listed_price</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;listedPrice&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">product_listed_price</span> <span class="o">=</span> <span class="n">product_price</span>
+                    <span class="n">discount</span> <span class="o">=</span> <span class="s2">&quot;FALSE&quot;</span>
+                <span class="n">menu_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">product_id</span><span class="p">,</span><span class="n">sublink</span><span class="p">,</span><span class="n">category_name</span><span class="p">,</span><span class="n">product_name</span><span class="p">,</span><span class="n">product_description</span><span class="p">,</span><span class="n">product_listed_price</span><span class="p">,</span><span class="n">product_price</span><span class="p">,</span><span class="n">discount</span><span class="p">,</span><span class="n">design_type</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">continue</span>
+    <span class="n">menu_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">menu_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PRODUCT_ID&quot;</span><span class="p">,</span><span class="s2">&quot;RESTAURANT_ID&quot;</span><span class="p">,</span><span class="s2">&quot;CATEGORY_NAME&quot;</span><span class="p">,</span><span class="s2">&quot;PRODUCT_NAME&quot;</span><span class="p">,</span><span class="s2">&quot;PRODUCT_DESCRIPTION&quot;</span><span class="p">,</span><span class="s2">&quot;PRODUCT_LISTED_PRICE&quot;</span><span class="p">,</span><span class="s2">&quot;PRODUCT_PRICE&quot;</span><span class="p">,</span><span class="s2">&quot;DISCOUNT&quot;</span><span class="p">,</span><span class="s2">&quot;DESIGN_TYPE&quot;</span><span class="p">])</span>    
+    <span class="n">menu_df</span> <span class="o">=</span> <span class="n">menu_df</span><span class="p">[</span><span class="n">menu_df</span><span class="p">[</span><span class="s1">&#39;PRODUCT_ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">menu_df</span> <span class="o">=</span> <span class="n">menu_df</span><span class="p">[</span><span class="n">menu_df</span><span class="p">[</span><span class="s1">&#39;PRODUCT_NAME&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">menu_df</span><span class="p">,</span> <span class="s1">&#39;PRODUCT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">menu_df</span><span class="p">,</span> <span class="s1">&#39;RESTAURANT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">menu_df</span><span class="p">,</span> <span class="s1">&#39;CATEGORY_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">menu_df</span><span class="p">,</span> <span class="s1">&#39;PRODUCT_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">menu_df</span><span class="p">,</span> <span class="s1">&#39;PRODUCT_DESCRIPTION&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">menu_df</span><span class="p">,</span> <span class="s1">&#39;PRODUCT_LISTED_PRICE&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">menu_df</span><span class="p">,</span> <span class="s1">&#39;PRODUCT_PRICE&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">menu_df</span><span class="p">,</span> <span class="s1">&#39;DESIGN_TYPE&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>    
+    <span class="n">menu_df</span><span class="p">[</span><span class="s1">&#39;DATE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&#39;&quot;</span><span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39;::date&quot;</span>
+    <span class="n">execute_mogrify</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="n">menu_df</span><span class="p">,</span><span class="s2">&quot;ODS&quot;</span><span class="p">,</span><span class="s2">&quot;EXT_FB_MENU&quot;</span><span class="p">)</span>
+<span class="n">menu_df</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[7]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    SELECT</span>
+<span class="s2">    &quot;RESTAURANT_ID&quot;</span>
+<span class="s2">    FROM &quot;ODS&quot;.&quot;EXT_FB_RESTAURANT&quot; EFR</span>
+<span class="s2">    WHERE 1=1</span>
+<span class="s2">    AND NOT EXISTS(SELECT NULL FROM &quot;ODS&quot;.&quot;EXT_FB_COMMENT&quot; EFC WHERE EFR.&quot;RESTAURANT_ID&quot; = EFC.&quot;RESTAURANT_ID&quot;);</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+<span class="n">restaurant_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql_command</span><span class="p">,</span><span class="n">conn</span><span class="p">)</span>
+<span class="n">restaurant_df</span>
 </pre></div>
 
      </div>
@@ -14510,24 +14597,328 @@ a.anchor-link {
 <div class="jp-OutputArea-child">
 
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[7]:</div>
 
 
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;559e852f-4256-45c5-9c98-c300ef06ccc4&#34; data-top-sold-product=&#34;true&#34; href=&#34;javascript:void(0);&#34;&gt; &lt;i class=&#34;ys-icons ys-icons-foto&#34; data-imagepath=&#34;//cdn.yemeksepeti.com/ProductImages/TR_ISTANBUL/pizzadante/pizzamista32cm._20210412193515_big.jpg&#34; data-productname=&#34;Pizza Mista (32 cm.)&#34;&gt;&lt;/i&gt; &lt;/a&gt;
-&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;DC93D4A3-F538-400F-A8D8-6E7F1DE13064&#34; data-top-sold-product=&#34;false&#34; href=&#34;javascript:void(0);&#34;&gt;Seçilmiş Menü (Pizza Mediterraneo (25 cm.))&lt;/a&gt;
-&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;4F9A1222-2174-4794-85BE-78B864137B58&#34; data-top-sold-product=&#34;false&#34; href=&#34;javascript:void(0);&#34;&gt;Vodafone Menüsü (Pizza Refanzine (32 cm.))&lt;/a&gt;
-&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;757058c4-a870-4021-9210-26b468ec4a11&#34; data-top-sold-product=&#34;false&#34; href=&#34;javascript:void(0);&#34;&gt; &lt;i class=&#34;ys-icons ys-icons-foto&#34; data-imagepath=&#34;//cdn.yemeksepeti.com/ProductImages/TR_ISTANBUL/pizzadante/margheritapizza25cm._20210412194206_big.jpg&#34; data-productname=&#34;Margherita Pizza (25 cm.)&#34;&gt;&lt;/i&gt; &lt;/a&gt;
-&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;e377c5de-94f1-496b-8bf3-66b9d1d02f6c&#34; data-top-sold-product=&#34;false&#34; href=&#34;javascript:void(0);&#34;&gt; &lt;i class=&#34;ys-icons ys-icons-foto&#34; data-imagepath=&#34;//cdn.yemeksepeti.com/ProductImages/TR_ISTANBUL/pizzadante/margheritapizza32cm._20210412193638_big.jpg&#34; data-productname=&#34;Margherita Pizza (32 cm.)&#34;&gt;&lt;/i&gt; &lt;/a&gt;
-&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;b6a5043d-7391-49b0-b57d-1b1def5f1e7f&#34; data-top-sold-product=&#34;false&#34; href=&#34;javascript:void(0);&#34;&gt; &lt;i class=&#34;ys-icons ys-icons-foto&#34; data-imagepath=&#34;//cdn.yemeksepeti.com/ProductImages/TR_ISTANBUL/pizzadante/pizzapepperoni25cm._20210412194104_big.jpg&#34; data-productname=&#34;Pizza Pepperoni (25 cm.)&#34;&gt;&lt;/i&gt; &lt;/a&gt;
-&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;8583c4d0-96e9-4907-a2a7-82bc4a2fa4d3&#34; data-top-sold-product=&#34;false&#34; href=&#34;javascript:void(0);&#34;&gt; &lt;i class=&#34;ys-icons ys-icons-foto&#34; data-imagepath=&#34;//cdn.yemeksepeti.com/ProductImages/TR_ISTANBUL/pizzadante/pizzapepperoni32cm._20210412193527_big.jpg&#34; data-productname=&#34;Pizza Pepperoni (32 cm.)&#34;&gt;&lt;/i&gt; &lt;/a&gt;
-&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;1d17aa32-d277-4739-9315-11dfc2d047d0&#34; data-top-sold-product=&#34;false&#34; href=&#34;javascript:void(0);&#34;&gt;Caprese&lt;/a&gt;
-&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;e9dd9acd-59b7-4cdf-a24d-fb35d8cc043a&#34; data-top-sold-product=&#34;false&#34; href=&#34;javascript:void(0);&#34;&gt;Ege Salata&lt;/a&gt;
-&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;fd3d52c9-3971-420f-a3c5-1d7f906540c9&#34; data-top-sold-product=&#34;false&#34; href=&#34;javascript:void(0);&#34;&gt;Çikolatalı Sufle&lt;/a&gt;
-&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;738033ca-9d89-47fc-bc49-81465c4c2c23&#34; data-top-sold-product=&#34;false&#34; href=&#34;javascript:void(0);&#34;&gt; &lt;i class=&#34;ys-icons ys-icons-foto&#34; data-imagepath=&#34;//cdn.yemeksepeti.com/ProductImages/icecek/cocacola33cl_big.jpg&#34; data-productname=&#34;Coca-Cola (33 cl.)&#34;&gt;&lt;/i&gt; &lt;/a&gt;
-&lt;a class=&#34;getProductDetail&#34; data-catalog-name=&#34;TR_ISTANBUL&#34; data-category-name=&#34;cdc0d69d-4e9d-445e-8e62-d8d500e93888&#34; data-product-id=&#34;ec723a81-039e-4d1f-9eb4-82582a73ca5c&#34; data-top-sold-product=&#34;false&#34; href=&#34;javascript:void(0);&#34;&gt;Poşet&lt;/a&gt;
-</pre>
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>RESTAURANT_ID</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>ghost-street-food-kadikoy-caddebostan-mah-ista...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>firinda-pizza-atasehir-esatpasa-mah-istanbul</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>mancinis-pizza-bakirkoy-kartaltepe-mah-incirli...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>beppe-pizzeria-kadikoy-acibadem-mah-istanbul</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>lokanta-fornello-kadikoy-rasimpasa-mah-istanbul</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>669</th>
+      <td>nak-restaurant-patisserie-esenler-oruc-reis-ma...</td>
+    </tr>
+    <tr>
+      <th>670</th>
+      <td>peggys-pizza-besiktas-arnavutkoy-mah-istanbul</td>
+    </tr>
+    <tr>
+      <th>671</th>
+      <td>little-caesars-pizza-pendik-velibaba-mah-istanbul</td>
+    </tr>
+    <tr>
+      <th>672</th>
+      <td>sbarro-pizza-atasehir-kucukbakkalkoy-mah-istanbul</td>
+    </tr>
+    <tr>
+      <th>673</th>
+      <td>mix-box-esenyurt-mehtercesme-mah-istanbul</td>
+    </tr>
+  </tbody>
+</table>
+<p>674 rows × 1 columns</p>
 </div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[8]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">restaurant_df</span><span class="p">)):</span>
+    <span class="n">sublink</span> <span class="o">=</span> <span class="n">restaurant_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s2">&quot;RESTAURANT_ID&quot;</span><span class="p">]</span>
+    <span class="n">last_comment_page_url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{website}</span><span class="s2">/</span><span class="si">{sublink}</span><span class="s2">?section=comments&amp;page=9999&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">website</span><span class="o">=</span><span class="n">website</span><span class="p">,</span><span class="n">sublink</span><span class="o">=</span><span class="n">sublink</span><span class="p">)</span>
+    
+    <span class="n">driver</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">last_comment_page_url</span><span class="p">)</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+    <span class="n">comments_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">last_comment_page_redirect_url</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">current_url</span>
+    <span class="n">last_comment_page_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">last_comment_page_redirect_url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;status=closed&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{website}</span><span class="s2">/</span><span class="si">{sublink}</span><span class="s2">?section=comments&amp;page=&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">website</span><span class="o">=</span><span class="n">website</span><span class="p">,</span><span class="n">sublink</span><span class="o">=</span><span class="n">sublink</span><span class="p">),</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">page_number</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">last_comment_page_number</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">current_comment_page_url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{website}</span><span class="s2">/</span><span class="si">{sublink}</span><span class="s2">?section=comments&amp;page=</span><span class="si">{page_number}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">website</span><span class="o">=</span><span class="n">website</span><span class="p">,</span><span class="n">sublink</span><span class="o">=</span><span class="n">sublink</span><span class="p">,</span><span class="n">page_number</span><span class="o">=</span><span class="n">page_number</span><span class="p">)</span>
+        <span class="n">driver</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">current_comment_page_url</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span><span class="p">(</span><span class="s2">&quot;sipariş verebilirsiniz.&quot;</span> <span class="ow">in</span> <span class="n">driver</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s1">&#39;//*[@id=&quot;restaurantDetail&quot;]/div/div[2]/h3&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">driver</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">XPATH</span><span class="p">,</span> <span class="s1">&#39;//*[@id=&quot;alternative-restaurant-popup&quot;]/div[1]/div[2]/img&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">click</span><span class="p">();</span> <span class="c1">#Closing pop-up</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>   
+
+        <span class="c1">#driver.find_element(By.XPATH, &#39;//*[@id=&quot;restaurantDetail&quot;]/div[2]/div[1]/ul/li[4]/a&#39;).click(); #Clicking comments</span>
+
+        <span class="n">comment_list</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s1">&#39;//*[@id=&quot;restaurant_comments&quot;]/div[4]&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">find_elements_by_class_name</span><span class="p">(</span><span class="s2">&quot;comments-body&quot;</span><span class="p">)</span>
+    
+        <span class="k">for</span> <span class="n">comment</span> <span class="ow">in</span> <span class="n">comment_list</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">username</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;userName&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                <span class="n">comment_text</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s1">&#39;.//p&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                <span class="n">comment_date</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;commentDate&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                <span class="n">speed</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;speed&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                <span class="n">serving</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;serving&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+                <span class="n">flavour</span> <span class="o">=</span> <span class="n">comment</span><span class="o">.</span><span class="n">find_element_by_class_name</span><span class="p">(</span><span class="s2">&quot;flavour&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span> 
+                <span class="n">comments_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">sublink</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">comment_text</span><span class="p">,</span> <span class="n">comment_date</span><span class="p">,</span> <span class="n">speed</span><span class="p">,</span> <span class="n">serving</span><span class="p">,</span> <span class="n">flavour</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">pass</span>
+    <span class="n">comment_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">comments_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;RESTAURANT_ID&quot;</span><span class="p">,</span><span class="s2">&quot;USERNAME&quot;</span><span class="p">,</span><span class="s2">&quot;COMMENT_TEXT&quot;</span><span class="p">,</span><span class="s2">&quot;COMMENT_DATE&quot;</span><span class="p">,</span><span class="s2">&quot;SPEED&quot;</span><span class="p">,</span><span class="s2">&quot;SERVING&quot;</span><span class="p">,</span><span class="s2">&quot;FLAVOUR&quot;</span><span class="p">])</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;RESTAURANT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;USERNAME&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;COMMENT_DATE&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;SPEED&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;SERVING&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;FLAVOUR&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;DATE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&#39;&quot;</span><span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39;::date&quot;</span>
+    <span class="n">execute_mogrify</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="n">comment_df</span><span class="p">,</span><span class="s2">&quot;ODS&quot;</span><span class="p">,</span><span class="s2">&quot;EXT_FB_COMMENT&quot;</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[21]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">comment_df</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[21]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>RESTAURANT_ID</th>
+      <th>USERNAME</th>
+      <th>COMMENT_TEXT</th>
+      <th>COMMENT_DATE</th>
+      <th>SPEED</th>
+      <th>SERVING</th>
+      <th>FLAVOUR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>pizza-dante-sisli-ergenekon-mah-pangalti-istanbul</td>
+      <td>...z</td>
+      <td>Peperoni favorim.</td>
+      <td>3 gün önce</td>
+      <td>Hız: 10</td>
+      <td>Servis: 10</td>
+      <td>Lezzet: 10</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>pizza-dante-sisli-ergenekon-mah-pangalti-istanbul</td>
+      <td>...d</td>
+      <td>Daha kötüsünü dominosda yemedim.</td>
+      <td>3 gün önce</td>
+      <td>Hız: 9</td>
+      <td>Servis: 9</td>
+      <td>Lezzet: 1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>pizza-dante-sisli-ergenekon-mah-pangalti-istanbul</td>
+      <td>...r</td>
+      <td>İnanılmaz yedigim en iyi pizzalardan biri ola ...</td>
+      <td>3 gün önce</td>
+      <td>Hız: 10</td>
+      <td>Servis: 10</td>
+      <td>Lezzet: 10</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>pizza-dante-sisli-ergenekon-mah-pangalti-istanbul</td>
+      <td>...l</td>
+      <td>Biraz yağlı ve hamuru da aşırı inceydi, bunlar...</td>
+      <td>4 gün önce</td>
+      <td>Hız: 10</td>
+      <td>Servis: 8</td>
+      <td>Lezzet: 9</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>pizza-dante-sisli-ergenekon-mah-pangalti-istanbul</td>
+      <td>...t</td>
+      <td>Cok lezzetli fakat fiyat cok yuksek...</td>
+      <td>4 gün önce</td>
+      <td>Hız: 10</td>
+      <td>Servis: 10</td>
+      <td>Lezzet: 10</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>129</th>
+      <td>pizza-dante-sisli-ergenekon-mah-pangalti-istanbul</td>
+      <td>...4</td>
+      <td>Gerçektende en iyisi sizsiniz.</td>
+      <td>2 ay önce</td>
+      <td>Hız: 10</td>
+      <td>Servis: 10</td>
+      <td>Lezzet: 10</td>
+    </tr>
+    <tr>
+      <th>130</th>
+      <td>pizza-dante-sisli-ergenekon-mah-pangalti-istanbul</td>
+      <td>...e</td>
+      <td>Çok teşekkür ederimçok hızlı geldi öncelikle v...</td>
+      <td>2 ay önce</td>
+      <td>Hız: 10</td>
+      <td>Servis: 10</td>
+      <td>Lezzet: 10</td>
+    </tr>
+    <tr>
+      <th>131</th>
+      <td>pizza-dante-sisli-ergenekon-mah-pangalti-istanbul</td>
+      <td>...9</td>
+      <td>Hamurunuzun çıtırlığına bayıldımm kenarları bi...</td>
+      <td>2 ay önce</td>
+      <td>Hız: 10</td>
+      <td>Servis: 10</td>
+      <td>Lezzet: 10</td>
+    </tr>
+    <tr>
+      <th>132</th>
+      <td>pizza-dante-sisli-ergenekon-mah-pangalti-istanbul</td>
+      <td>...l</td>
+      <td>Bundan yaklasik 1 sene once milanoda bulunmust...</td>
+      <td>2 ay önce</td>
+      <td>Hız: 10</td>
+      <td>Servis: 10</td>
+      <td>Lezzet: 10</td>
+    </tr>
+    <tr>
+      <th>133</th>
+      <td>pizza-dante-sisli-ergenekon-mah-pangalti-istanbul</td>
+      <td>...0</td>
+      <td>The pizza ıs super tasty and thanks for the gift.</td>
+      <td>2 ay önce</td>
+      <td>Hız: 10</td>
+      <td>Servis: 10</td>
+      <td>Lezzet: 10</td>
+    </tr>
+  </tbody>
+</table>
+<p>134 rows × 7 columns</p>
+</div>
+</div>
+
 </div>
 
 </div>
