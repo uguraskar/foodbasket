@@ -14259,7 +14259,7 @@ a.anchor-link {
 
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="Web-Scrapping">Web Scrapping<a class="anchor-link" href="#Web-Scrapping">&#182;</a></h1>
+<h1 id="Web-Scraping">Web Scraping<a class="anchor-link" href="#Web-Scraping">&#182;</a></h1>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
@@ -14299,6 +14299,9 @@ a.anchor-link {
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">pycld2</span>
+<span class="kn">import</span> <span class="nn">nltk</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">selenium</span> <span class="kn">import</span> <span class="n">webdriver</span>
 <span class="kn">from</span> <span class="nn">selenium.webdriver.chrome.options</span> <span class="kn">import</span> <span class="n">Options</span>
@@ -14306,6 +14309,20 @@ a.anchor-link {
 <span class="kn">from</span> <span class="nn">selenium.webdriver.support.ui</span> <span class="kn">import</span> <span class="n">WebDriverWait</span> 
 <span class="kn">from</span> <span class="nn">selenium.webdriver.support</span> <span class="kn">import</span> <span class="n">expected_conditions</span> <span class="k">as</span> <span class="n">EC</span>
 <span class="kn">from</span> <span class="nn">selenium.common.exceptions</span> <span class="kn">import</span> <span class="n">NoSuchElementException</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="kn">import</span> <span class="n">stopwords</span>
+<span class="kn">from</span> <span class="nn">TurkishStemmer</span> <span class="kn">import</span> <span class="n">TurkishStemmer</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">TfidfVectorizer</span><span class="p">,</span> <span class="n">CountVectorizer</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">GaussianNB</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="kn">import</span> <span class="n">SVC</span><span class="p">,</span> <span class="n">LinearSVC</span>
+<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">precision_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">GridSearchCV</span>
+
+<span class="n">nltk</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s1">&#39;stopwords&#39;</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">stemmer</span> <span class="o">=</span> <span class="n">TurkishStemmer</span><span class="p">()</span>
 
 <span class="n">conn_string</span> <span class="o">=</span> <span class="s1">&#39;host=</span><span class="si">{pghost}</span><span class="s1"> port=</span><span class="si">{pgport}</span><span class="s1"> dbname=</span><span class="si">{pgdatabase}</span><span class="s1"> user=</span><span class="si">{pguser}</span><span class="s1"> password=</span><span class="si">{pgpassword}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pgdatabase</span><span class="o">=</span><span class="n">db_name</span><span class="p">,</span><span class="n">pguser</span><span class="o">=</span><span class="n">db_username</span><span class="p">,</span><span class="n">pgpassword</span><span class="o">=</span><span class="n">db_password</span><span class="p">,</span><span class="n">pghost</span><span class="o">=</span><span class="n">db_host</span><span class="p">,</span><span class="n">pgport</span><span class="o">=</span><span class="n">db_port</span><span class="p">)</span>
 <span class="n">conn</span><span class="o">=</span><span class="n">psycopg2</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">conn_string</span><span class="p">)</span>
@@ -14349,9 +14366,14 @@ a.anchor-link {
     <span class="k">if</span><span class="p">(</span><span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;date&#39;</span><span class="p">):</span>
         <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&#39;::date&quot;</span><span class="p">)</span>
     <span class="k">if</span><span class="p">(</span><span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;numeric&#39;</span><span class="p">):</span>
-        <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
     <span class="k">if</span><span class="p">(</span><span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;integer&#39;</span><span class="p">):</span>
-        <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column_name</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span><span class="s1">&#39;.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;Int64&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">clean_text</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[,.</span><span class="se">\&quot;</span><span class="s2">\&#39;!@#$%^&amp;*()</span><span class="si">{}</span><span class="s2">?/;`~:&lt;&gt;+=-</span><span class="se">\\</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text</span>
 </pre></div>
 
      </div>
@@ -14428,6 +14450,42 @@ a.anchor-link {
     <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;COMMIT;&#39;</span><span class="p">)</span>
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Table ODS.EXT_FB_COMMENT created in </span><span class="si">{execute_time}</span><span class="s2"> seconds.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">execute_time</span><span class="o">=</span><span class="n">end_time</span><span class="o">-</span><span class="n">start_time</span><span class="p">))</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">check_if_table_exists</span><span class="p">(</span><span class="s1">&#39;EDW&#39;</span><span class="p">,</span><span class="s1">&#39;DWH_FB_COMMENT&#39;</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Table EDW.DWH_FB_COMMENT already exists.&#39;</span><span class="p">)</span>   
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    CREATE TABLE &quot;EDW&quot;.&quot;DWH_FB_COMMENT&quot;</span>
+<span class="s2">    (</span>
+<span class="s2">    &quot;RESTAURANT_ID&quot; text,</span>
+<span class="s2">    &quot;USERNAME&quot; text,</span>
+<span class="s2">    &quot;COMMENT_TEXT&quot; text,</span>
+<span class="s2">    &quot;COMMENT_DATE&quot; date,</span>
+<span class="s2">    &quot;SPEED&quot; integer,</span>
+<span class="s2">    &quot;SERVING&quot; integer,</span>
+<span class="s2">    &quot;FLAVOUR&quot; integer,</span>
+<span class="s2">    &quot;DATE&quot; date,</span>
+<span class="s2">    CONSTRAINT &quot;UNIQUE_COMMENTS&quot; UNIQUE (&quot;RESTAURANT_ID&quot;, &quot;USERNAME&quot;, &quot;COMMENT_TEXT&quot;)</span>
+<span class="s2">    );</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;COMMIT;&#39;</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Table EDW.DWH_FB_COMMENT created in </span><span class="si">{execute_time}</span><span class="s2"> seconds.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">execute_time</span><span class="o">=</span><span class="n">end_time</span><span class="o">-</span><span class="n">start_time</span><span class="p">))</span>
+
+<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">CREATE OR REPLACE FUNCTION public.try_cast(_in text, INOUT _out anyelement)</span>
+<span class="s2">    LANGUAGE &#39;plpgsql&#39;</span>
+<span class="s2">AS $BODY$</span>
+<span class="s2">BEGIN</span>
+<span class="s2">   EXECUTE format(&#39;SELECT %L::</span><span class="si">%s</span><span class="s2">&#39;, $1, pg_typeof(_out))</span>
+<span class="s2">   INTO  _out;</span>
+<span class="s2">EXCEPTION WHEN others THEN</span>
+<span class="s2">   -- do nothing: _out already carries default</span>
+<span class="s2">END</span>
+<span class="s2">$BODY$;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;COMMIT;&#39;</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14450,6 +14508,7 @@ a.anchor-link {
 <pre>Table ODS.EXT_FB_RESTAURANT already exists.
 Table ODS.EXT_FB_MENU already exists.
 Table ODS.EXT_FB_COMMENT already exists.
+Table EDW.DWH_FB_COMMENT already exists.
 </pre>
 </div>
 </div>
@@ -14710,48 +14769,48 @@ Table ODS.EXT_FB_COMMENT already exists.
   </thead>
   <tbody>
     <tr>
-      <th>62</th>
-      <td>yelken-kitchen-coffee-beykoz-kanlica-mah-istanbul</td>
+      <th>41</th>
+      <td>fitchino-avcilar-ambarli-mah-istanbul</td>
     </tr>
     <tr>
-      <th>65</th>
-      <td>gardenia-burger-pizza-makarna-sariyer-maslak-m...</td>
+      <th>17</th>
+      <td>dominos-pizza-atasehir-ataturk-mah-girne-cad-i...</td>
     </tr>
     <tr>
-      <th>34</th>
-      <td>pizza-italyanoo-kucukcekmece-atakent-mah-kanun...</td>
+      <th>56</th>
+      <td>kurucesme-kahvesi-atasehir-barbaros-mah-istanbul</td>
     </tr>
     <tr>
-      <th>47</th>
-      <td>pizza-2m-kadikoy-caferaga-mah-moda-istanbul</td>
+      <th>72</th>
+      <td>bocek-kadikoy-caferaga-mah-moda-istanbul</td>
     </tr>
     <tr>
-      <th>31</th>
-      <td>by-bado-sile-kumbaba-mah-istanbul</td>
+      <th>14</th>
+      <td>mondes-besiktas-mecidiye-mah-istanbul</td>
     </tr>
     <tr>
       <th>...</th>
       <td>...</td>
     </tr>
     <tr>
-      <th>44</th>
-      <td>pizzeria-bella-italia-sisli-esentepe-mah-istanbul</td>
+      <th>42</th>
+      <td>food-hall-istanbul-beyoglu-asmalimescit-mah-is...</td>
     </tr>
     <tr>
-      <th>24</th>
-      <td>afili-pizza-kadikoy-rasimpasa-mah-istanbul</td>
+      <th>61</th>
+      <td>pizza-hut-umraniye-ihlamurkuyu-mah-istanbul</td>
     </tr>
     <tr>
-      <th>22</th>
-      <td>spana-organik-bufe-kadikoy-dumlupinar-mah-ista...</td>
+      <th>64</th>
+      <td>un-po-beyoglu-kemankes-mah-istanbul</td>
     </tr>
     <tr>
-      <th>7</th>
-      <td>salon-kalamis-kadikoy-fenerbahce-mah-istanbul</td>
+      <th>43</th>
+      <td>vera-pizza-pasta-bakirkoy-cevizlik-mah-istanbul</td>
     </tr>
     <tr>
-      <th>60</th>
-      <td>ghost-pizza-kadikoy-caddebostan-mah-istanbul</td>
+      <th>48</th>
+      <td>kafein-plus-kucukcekmece-tevfikbey-mah-sefakoy...</td>
     </tr>
   </tbody>
 </table>
@@ -14847,6 +14906,466 @@ Table ODS.EXT_FB_COMMENT already exists.
 </div>
 </div>
 
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">driver</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h1 id="Data-Preprocessing">Data Preprocessing<a class="anchor-link" href="#Data-Preprocessing">&#182;</a></h1>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[11]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">last_execution_date</span> <span class="o">&lt;</span> <span class="n">end_date</span><span class="p">):</span>
+    <span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        WITH CLEAN_DATA AS(</span>
+<span class="s2">        SELECT</span>
+<span class="s2">        EFC.&quot;RESTAURANT_ID&quot;,</span>
+<span class="s2">        EFC.&quot;USERNAME&quot;,</span>
+<span class="s2">        LOWER(EFC.&quot;COMMENT_TEXT&quot;) AS &quot;COMMENT_TEXT&quot;,</span>
+<span class="s2">        EFC.&quot;COMMENT_DATE&quot;,</span>
+<span class="s2">        TRY_CAST(REGEXP_REPLACE(EFC.&quot;SPEED&quot;, &#39;\D&#39;,&#39;&#39;,&#39;g&#39;),NULL::INTEGER) AS &quot;SPEED&quot;,</span>
+<span class="s2">        TRY_CAST(REGEXP_REPLACE(EFC.&quot;SERVING&quot;, &#39;\D&#39;,&#39;&#39;,&#39;g&#39;),NULL::INTEGER) AS &quot;SERVING&quot;,</span>
+<span class="s2">        TRY_CAST(REGEXP_REPLACE(EFC.&quot;FLAVOUR&quot;, &#39;\D&#39;,&#39;&#39;,&#39;g&#39;),NULL::INTEGER) AS &quot;FLAVOUR&quot;,</span>
+<span class="s2">        EFC.&quot;DATE&quot;,</span>
+<span class="s2">        REGEXP_REPLACE(EFC.&quot;COMMENT_DATE&quot;, &#39;\D&#39;,&#39;&#39;,&#39;g&#39;)||&#39; &#39;||REPLACE(REPLACE(REPLACE(REGEXP_REPLACE(REPLACE(EFC.&quot;COMMENT_DATE&quot;,&#39; önce&#39;,&#39;&#39;), &#39;[^[:alpha:]]&#39;, &#39;&#39;, &#39;g&#39;),&#39;ay&#39;,&#39;month&#39;),&#39;bugün&#39;,&#39;today&#39;),&#39;gün&#39;,&#39;day&#39;) AS &quot;COMMENT_DATE_INTERVAL&quot;</span>
+<span class="s2">        FROM &quot;ODS&quot;.&quot;EXT_FB_COMMENT&quot; EFC</span>
+<span class="s2">        WHERE 1=1</span>
+<span class="s2">        AND EFC.&quot;USERNAME&quot; &lt;&gt; &#39;Yemeksepeti&#39;</span>
+<span class="s2">        )</span>
+<span class="s2">        SELECT</span>
+<span class="s2">        CD.&quot;RESTAURANT_ID&quot;,</span>
+<span class="s2">        CD.&quot;USERNAME&quot;,</span>
+<span class="s2">        CD.&quot;COMMENT_TEXT&quot;,</span>
+<span class="s2">        CASE WHEN CD.&quot;COMMENT_DATE_INTERVAL&quot; = &#39; today&#39; THEN CD.&quot;DATE&quot; ELSE CD.&quot;DATE&quot; - CAST(CD.&quot;COMMENT_DATE_INTERVAL&quot; AS INTERVAL) END::date AS &quot;COMMENT_DATE&quot;,</span>
+<span class="s2">        CD.&quot;SPEED&quot;,</span>
+<span class="s2">        CD.&quot;SERVING&quot;,</span>
+<span class="s2">        CD.&quot;FLAVOUR&quot;,</span>
+<span class="s2">        CD.&quot;DATE&quot;</span>
+<span class="s2">        FROM CLEAN_DATA CD;</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+    <span class="n">comment_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql_command</span><span class="p">,</span><span class="n">conn</span><span class="p">)</span>
+    <span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">clean_text</span><span class="p">)</span>
+    <span class="n">comment_df</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;RESTAURANT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;USERNAME&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;COMMENT_DATE&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;SPEED&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;SERVING&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;FLAVOUR&#39;</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">)</span>
+    <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">comment_df</span><span class="p">,</span> <span class="s1">&#39;DATE&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">)</span>
+    <span class="n">comment_df</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&lt;NA&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;NULL&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">execute_mogrify</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="n">comment_df</span><span class="p">,</span><span class="s2">&quot;EDW&quot;</span><span class="p">,</span><span class="s2">&quot;DWH_FB_COMMENT&quot;</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    SELECT</span>
+<span class="s2">    *</span>
+<span class="s2">    FROM &quot;EDW&quot;.&quot;DWH_FB_COMMENT&quot; EFR;</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+<span class="n">comment_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql_command</span><span class="p">,</span><span class="n">conn</span><span class="p">)</span>
+<span class="n">comment_df</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>RESTAURANT_ID</th>
+      <th>USERNAME</th>
+      <th>COMMENT_TEXT</th>
+      <th>COMMENT_DATE</th>
+      <th>SPEED</th>
+      <th>SERVING</th>
+      <th>FLAVOUR</th>
+      <th>DATE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...i</td>
+      <td>i̇lk kez sipariş verdim bu restauranttan patat...</td>
+      <td>2021-01-10</td>
+      <td>10.0</td>
+      <td>5</td>
+      <td>8</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...3</td>
+      <td>her söyledigimde somon daha da kötüleşiyor bu ...</td>
+      <td>2021-01-10</td>
+      <td>9.0</td>
+      <td>6</td>
+      <td>4</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...0</td>
+      <td>itu</td>
+      <td>2021-01-10</td>
+      <td>8.0</td>
+      <td>8</td>
+      <td>8</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...t</td>
+      <td>18 dkda kapıdaydi sıcak ve lezzetli süpersiniz</td>
+      <td>2021-01-10</td>
+      <td>10.0</td>
+      <td>10</td>
+      <td>10</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...e</td>
+      <td>dağ kekikli tavuğun yanında gelen makarna bild...</td>
+      <td>2021-01-10</td>
+      <td>10.0</td>
+      <td>6</td>
+      <td>3</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>271838</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...1</td>
+      <td>anladık ki hamburgerler kötü pizzadan devam</td>
+      <td>2021-01-10</td>
+      <td>5.0</td>
+      <td>5</td>
+      <td>5</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>271839</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...d</td>
+      <td>tiramisu malesef rezaletti kreması ekşimişti y...</td>
+      <td>2021-01-10</td>
+      <td>1.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>271840</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...k</td>
+      <td>dağ kekikli tavuk inanılmaz güzel bağımlısıyım</td>
+      <td>2021-01-10</td>
+      <td>10.0</td>
+      <td>10</td>
+      <td>10</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>271841</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...7</td>
+      <td>waffle söyledik kalın bir hamur üzerine 6 7 kü...</td>
+      <td>2021-01-10</td>
+      <td>6.0</td>
+      <td>4</td>
+      <td>3</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>271842</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...l</td>
+      <td>pizza adana börek ve pasta nefisti teşekkür ed...</td>
+      <td>2021-01-10</td>
+      <td>10.0</td>
+      <td>10</td>
+      <td>9</td>
+      <td>2021-06-10</td>
+    </tr>
+  </tbody>
+</table>
+<p>271843 rows × 8 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">stop_words</span> <span class="o">=</span> <span class="p">[</span><span class="n">element</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;turkish&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;çok&#39;</span><span class="p">,</span><span class="s1">&#39;eğer&#39;</span><span class="p">,</span><span class="s1">&#39;gibi&#39;</span><span class="p">,</span><span class="s1">&#39;hiç&#39;</span><span class="p">,</span><span class="s1">&#39;niçin&#39;</span><span class="p">,</span><span class="s1">&#39;niye&#39;</span><span class="p">,</span><span class="s1">&#39;sanki&#39;</span><span class="p">,</span><span class="s1">&#39;yani&#39;</span><span class="p">,</span><span class="s1">&#39;en&#39;</span><span class="p">,</span><span class="s1">&#39;az&#39;</span><span class="p">,</span><span class="s1">&#39;birkaç&#39;</span><span class="p">,</span><span class="s1">&#39;bazı&#39;</span><span class="p">,</span><span class="s1">&#39;aslında&#39;</span><span class="p">,</span><span class="s1">&#39;neden&#39;</span><span class="p">,</span><span class="s1">&#39;hepsi&#39;</span><span class="p">]]</span>
+<span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">stop_words</span><span class="p">)]))</span>
+<span class="c1">#comment_df[&#39;COMMENT_TEXT&#39;] = comment_df[&#39;COMMENT_TEXT&#39;].apply(lambda x: &#39; &#39;.join([stemmer.stem(word) for word in x.split()]))</span>
+<span class="n">comment_df</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[13]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>RESTAURANT_ID</th>
+      <th>USERNAME</th>
+      <th>COMMENT_TEXT</th>
+      <th>COMMENT_DATE</th>
+      <th>SPEED</th>
+      <th>SERVING</th>
+      <th>FLAVOUR</th>
+      <th>DATE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...i</td>
+      <td>i̇lk sipariş verdim restauranttan patates sıca...</td>
+      <td>2021-01-10</td>
+      <td>10.0</td>
+      <td>5</td>
+      <td>8</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...3</td>
+      <td>söyledigimde somon kötüleşiyor sefer fettucini...</td>
+      <td>2021-01-10</td>
+      <td>9.0</td>
+      <td>6</td>
+      <td>4</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...0</td>
+      <td>itu</td>
+      <td>2021-01-10</td>
+      <td>8.0</td>
+      <td>8</td>
+      <td>8</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...t</td>
+      <td>18 dkda kapıdaydi sıcak lezzetli süpersiniz</td>
+      <td>2021-01-10</td>
+      <td>10.0</td>
+      <td>10</td>
+      <td>10</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...e</td>
+      <td>dağ kekikli tavuğun yanında gelen makarna bild...</td>
+      <td>2021-01-10</td>
+      <td>10.0</td>
+      <td>6</td>
+      <td>3</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>271838</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...1</td>
+      <td>anladık hamburgerler kötü pizzadan devam</td>
+      <td>2021-01-10</td>
+      <td>5.0</td>
+      <td>5</td>
+      <td>5</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>271839</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...d</td>
+      <td>tiramisu malesef rezaletti kreması ekşimişti y...</td>
+      <td>2021-01-10</td>
+      <td>1.0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>271840</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...k</td>
+      <td>dağ kekikli tavuk inanılmaz güzel bağımlısıyım</td>
+      <td>2021-01-10</td>
+      <td>10.0</td>
+      <td>10</td>
+      <td>10</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>271841</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...7</td>
+      <td>waffle söyledik kalın bir hamur üzerine 6 7 kü...</td>
+      <td>2021-01-10</td>
+      <td>6.0</td>
+      <td>4</td>
+      <td>3</td>
+      <td>2021-06-10</td>
+    </tr>
+    <tr>
+      <th>271842</th>
+      <td>magic-akademi-kartal-esentepe-mah-istanbul</td>
+      <td>...l</td>
+      <td>pizza adana börek pasta nefisti teşekkür ederiz</td>
+      <td>2021-01-10</td>
+      <td>10.0</td>
+      <td>10</td>
+      <td>9</td>
+      <td>2021-06-10</td>
+    </tr>
+  </tbody>
+</table>
+<p>271843 rows × 8 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
@@ -14855,12 +15374,666 @@ Table ODS.EXT_FB_COMMENT already exists.
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Bag-of-Words">Bag of Words<a class="anchor-link" href="#Bag-of-Words">&#182;</a></h2>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Gaussian-Naive-Bayes">Gaussian Naive Bayes<a class="anchor-link" href="#Gaussian-Naive-Bayes">&#182;</a></h3>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="c1">#print(np.shape(labels))</span>
+
+<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+
+<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
+<pre>&lt;ipython-input-14-57e8c84ed6cb&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
+Total Features after vectorizing: 2733
+Accuracy Score: 31.33%
+F1 Score: 31.33%
+Precision Score: 31.33%
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Support-Vector-Machines">Support Vector Machines<a class="anchor-link" href="#Support-Vector-Machines">&#182;</a></h3>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h4 id="C-Support-Vector-Classification">C-Support Vector Classification<a class="anchor-link" href="#C-Support-Vector-Classification">&#182;</a></h4>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[15]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+
+<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Total Features after vectorizing: 2733
+&lt;ipython-input-15-31bcc9e0fb71&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
+Accuracy Score: 64.19%
+F1 Score: 64.19%
+Precision Score: 64.19%
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h4 id="Linear-Support-Vector-Classification">Linear Support Vector Classification<a class="anchor-link" href="#Linear-Support-Vector-Classification">&#182;</a></h4>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">LinearSVC</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+
+<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Total Features after vectorizing: 2733
+&lt;ipython-input-16-abecfc9eee10&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
+Accuracy Score: 60.05%
+F1 Score: 60.05%
+Precision Score: 60.05%
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Decision-Tree-Classifier">Decision Tree Classifier<a class="anchor-link" href="#Decision-Tree-Classifier">&#182;</a></h3>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9600</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">],</span>
+    <span class="s1">&#39;min_samples_split&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+    <span class="p">}</span>
+
+<span class="n">gscv</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">DecisionTreeClassifier</span><span class="p">(),</span> <span class="n">params</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">gscv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best parameters: </span><span class="si">{best_parameters}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">best_parameters</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_params_</span><span class="p">))</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_estimator_</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+
+<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Total Features after vectorizing: 2619
+&lt;ipython-input-17-de71e106f8b8&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[&#39;SPEED&#39;])]
+Best parameters: {&#39;max_depth&#39;: 13, &#39;min_samples_split&#39;: 2}
+Accuracy Score: 63.09%
+F1 Score: 63.09%
+Precision Score: 63.09%
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Logistic-Regression">Logistic Regression<a class="anchor-link" href="#Logistic-Regression">&#182;</a></h3>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[18]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9600</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+
+<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Total Features after vectorizing: 2619
+&lt;ipython-input-18-eccb7253df41&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[&#39;SPEED&#39;])]
+Accuracy Score: 63.19%
+F1 Score: 63.19%
+Precision Score: 63.19%
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Bag-of-Words-with-TF-IDF-Vectorizer">Bag of Words with TF-IDF Vectorizer<a class="anchor-link" href="#Bag-of-Words-with-TF-IDF-Vectorizer">&#182;</a></h2>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Gaussian-Naive-Bayes">Gaussian Naive Bayes<a class="anchor-link" href="#Gaussian-Naive-Bayes">&#182;</a></h3>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[19]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="c1">#print(np.shape(labels))</span>
+
+<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+
+<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Total Features after vectorizing: 2733
+&lt;ipython-input-19-6f54f08c5ef9&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
+Accuracy Score: 31.43%
+F1 Score: 31.43%
+Precision Score: 31.43%
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Support-Vector-Machines">Support Vector Machines<a class="anchor-link" href="#Support-Vector-Machines">&#182;</a></h3>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h4 id="C-Support-Vector-Classification">C-Support Vector Classification<a class="anchor-link" href="#C-Support-Vector-Classification">&#182;</a></h4>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[20]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">],</span>
+    <span class="c1">#&#39;C&#39;: [1.4,1.5,1.6],</span>
+    <span class="s1">&#39;kernel&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;rbf&#39;</span><span class="p">]</span>
+    <span class="c1">#&#39;kernel&#39;: [&#39;linear&#39;,&#39;rbf&#39;,&#39;sigmoid&#39;]</span>
+    <span class="p">}</span>
+
+<span class="n">gscv</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">SVC</span><span class="p">(),</span> <span class="n">params</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">gscv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best parameters: </span><span class="si">{best_parameters}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">best_parameters</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_params_</span><span class="p">))</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_estimator_</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+
+<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Total Features after vectorizing: 2733
+&lt;ipython-input-20-ed41f9384cd3&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
+Best parameters: {&#39;C&#39;: 1.5, &#39;kernel&#39;: &#39;rbf&#39;}
+Accuracy Score: 65.76%
+F1 Score: 65.76%
+Precision Score: 65.76%
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h4 id="Linear-Support-Vector-Classification">Linear Support Vector Classification<a class="anchor-link" href="#Linear-Support-Vector-Classification">&#182;</a></h4>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[21]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">LinearSVC</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+
+<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Total Features after vectorizing: 2733
+&lt;ipython-input-21-61109543768c&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
+Accuracy Score: 63.05%
+F1 Score: 63.05%
+Precision Score: 63.05%
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Decision-Tree-Classifier">Decision Tree Classifier<a class="anchor-link" href="#Decision-Tree-Classifier">&#182;</a></h3>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[22]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9600</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">],</span>
+    <span class="s1">&#39;min_samples_split&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+    <span class="p">}</span>
+
+<span class="n">gscv</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">DecisionTreeClassifier</span><span class="p">(),</span> <span class="n">params</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">gscv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best parameters: </span><span class="si">{best_parameters}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">best_parameters</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_params_</span><span class="p">))</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_estimator_</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+
+<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Total Features after vectorizing: 2619
+&lt;ipython-input-22-b6a83c6a06e2&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[&#39;SPEED&#39;])]
+Best parameters: {&#39;max_depth&#39;: 10, &#39;min_samples_split&#39;: 2}
+Accuracy Score: 62.77%
+F1 Score: 62.77%
+Precision Score: 62.77%
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Logistic-Regression">Logistic Regression<a class="anchor-link" href="#Logistic-Regression">&#182;</a></h3>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[23]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9600</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+
+<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Total Features after vectorizing: 2619
+&lt;ipython-input-23-3703865826cd&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[&#39;SPEED&#39;])]
+Accuracy Score: 65.71%
+F1 Score: 65.71%
+Precision Score: 65.71%
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Markov-Chains">Markov Chains<a class="anchor-link" href="#Markov-Chains">&#182;</a></h2>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[24]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -14892,7 +16065,7 @@ Table ODS.EXT_FB_COMMENT already exists.
 <div class="jp-OutputArea-child">
 
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[24]:</div>
 
 
 
@@ -14965,7 +16138,7 @@ Table ODS.EXT_FB_COMMENT already exists.
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[25]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
@@ -15020,12 +16193,13 @@ Table ODS.EXT_FB_COMMENT already exists.
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[26]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">text</span> <span class="o">=</span> <span class="n">restaurant_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;all_comment&#39;</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">restaurant_df</span><span class="p">[</span><span class="s1">&#39;clean_comment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">restaurant_df</span><span class="p">[</span><span class="s1">&#39;all_comment&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">clean_text</span><span class="p">)</span>
+<span class="n">text</span> <span class="o">=</span> <span class="n">restaurant_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;clean_comment&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
 
-<span class="n">markov_model</span> <span class="o">=</span> <span class="n">make_markov_model</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+<span class="n">markov_model</span> <span class="o">=</span> <span class="n">make_markov_model</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;. &quot;</span><span class="p">,</span> <span class="n">generate_story</span><span class="p">(</span><span class="n">markov_model</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="s2">&quot;yemek çok&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">20</span><span class="p">))</span>
@@ -15048,26 +16222,26 @@ Table ODS.EXT_FB_COMMENT already exists.
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>0.  yemek çok hızlı ve sıcacık geldi. çok iyisi sıcak geldi. teşekkürler. zamanında ve eksiksiz geldi teşekkür ederim. kesinlikle denemelisiniz... hız lezzet servis harikaaaa. malzeme daha bol gönderilseydi iyi olurdu çünkü sizde blirsinizki peynir pizzanın olmazssa olmazıdır... pizza kupkuru ve malzeme yokkkk doldurmuşlar 
-1.  yemek çok hızlı ve sıcak geldi, nazikliği için mert beye de teşekkür ederiz. her zaman ki ilgi her zaman ki gibi aşırı lezzetli. tekrardan kuryecimiz merte efendiliği için teşekkür ediyorum :). pizzanın lezzeti her zamanki gibi harikaydı. halil beye teşekkürler. sıcakkanlı kuryeniz 
-2.  yemek çok hızlı ve sıcacıktı. hüseyin beye nezaketi için teşekkür eder kolaylıklar dilerim. siparişimi getiren kurye hüseyine çok teşekkürler. sipariş cok çabuk geldi ve çok ilgililerdi teşekkür ederiz. pizzanın kralı. faruk bey yanılmıyorsam ürünleri elime verdiğinde buhar çıkıyordu. kurye arkadaşın güleryüzlülüğü içinde 
-3.  yemek çok hızlı ve nazikti. kurye arkadaş furkan bey e çok teşekkür ediyorum... pişmemiş malzeme vardı. pizza da tatlıda başarılıydı teşekkür ederiz. hizli teslimat, harika. huseyin. hüseyin bey in güleryüzü için ayrıca teşekkür ederim. hızlı ve sıcacık geldi. sıcacık hızlı ve lezzetli 
-4.  yemek çok hızlı ve güleryüzlü sanırım hüseyin di adı. ama lütfen sırf hızlı götürmek uğruna canınızı hiçe saymayın. 20 dk geç yiyelim sorun değil. servis ve lezzette gayet güzeldi. zamanında ve suflelerimizi sıcak getirdiğiniz için teşekkür ederim özellikle kuryeniz hüseyin bey de 
-5.  yemek çok hızlı ve kibar bir çalışan. hüseyin kardeşime teşekkürler. güzeldi. hüseyin arkadaşımızın güleryüzü ve sohbeti de öenmli bir değer denebilir. pizzalar lezizdi, kurye hüseyin arkadaşımıza da teşekkürler sıcak sıcak tam zamanında servis geldi teşekkür ederim. ürün ellerinde olmadığından arayıp bilgilendirdiler ve 
-6.  yemek çok hızlı ve servisi güzel fakat pizza icin olumsuz bir yorum yapicam. ton balikli pizza söyledim inanin bir kac tane balik parcasi cok az kaşar bir kac tane balik parcasi cok az kaşar bir kac misir atmislar gondermişler ve bu urune 
-7.  yemek çok hızlı ve sıcacık geldi bundan sonra yeni restorantımız pizza bulls kaliteyi koruması dileği ile teşekkürler. hızlı ve sıcak geldi. oldukçada lezzetliydi. 3 yada 4üncü siparişim gayet memnun kaldım. siparişin süratle yerine getirilmesi, sıcak gelmesi ve kurye bey çok nazikti bir 
-8.  yemek çok hızlı ve sıcacık geldi bu soğukta. teşekkürler. çok hızlı geldi onun sayesinde ve sıcak olarak ulaştıran kurye oğuzhan beye nezaketinden ötürü teşekkür ederim. kurye hüseyin beye hızı ve tatlı dili için çok teşekkürler :). kurye arkadaşa teşekkürler hızlı ve sıcak 
-9.  yemek çok hızlı ve sımsıcak getirdi. kuryemiz oğuzhan çok iyiydi ellerinize sağlık güzeldi. furkan beye tesekkurlerhızlı ve sıcak bi. şekilde getirdi. yemeği hızlı ve sıcacıktı. hüseyin beye nezaketi için ayrıca teşekkür ederiz. pizzalarımız sıcacık geldi. teşekkür ederiz. furkan bey güler yüzü ve 
-10.  yemek çok hızlı ve sıcacık geldi çok teşekkür ederiiz. pizza soğuktu. pizzalarımız sıcacık ve çok lezzetliydi. dipnotları dikkate almayan bir yönetici, iftarda göndereceğiz diyip 1 saat sonra gelen siparişten hayır beklemiyordum zaten ve beni şaşırtmadı nasıl böyle ortalama 9 ve üstü bilmiyorum 
-11.  yemek çok hızlı ve özenli teslim etti siparişimi. teşekkürler. gelen mert beyin hizmetini beğendim. çok teşekkürler. zamanında ve eksiksiz geldi yeni şubeniz hayırlı olsun :d. çok lezzetli idi. siparişimi getiren mert beye de teşekkürler,. teşekkür ediyorum. sipariş gayet hızlı ve kibardı. siparişimizi 
-12.  yemek çok hızlı ve pişkin geldi. teslimatı yapan hüseyin beye samimiyetinden dolayı teşekkür ederim. bu civarın en iyi pizza firması diyebilirim. dört peynir istedim ama sucuklu geldi. eh işte. enfes enfes enfes... sıcaklığı, ağızdaki yarattığı his, mutluluk hissi, var olma hissi... bir 
-13.  yemek çok hızlı ve sıcak geldi, kesinlikle tavsiye etmiyorum. her zamanki gibi 10 numara. pizza soğuktu, sanki lavaş üstüne birkaç sosis ve sucuklar kuruydu. sufle sı çok kötüydü onun haricinde normal kalite. tavuklar için iyi pişmesini rica etmiştik fakat dışarı kısımları hafif 
-14.  yemek çok hızlı ve güler yüzlüydu. bayraminiz mübarek olsun. sağlam. servis hızlı, siparişi getiren furkan bey e teşekkür ediyorum. sıcacık ve vaktinde gelen pizzadan daha güzel ne olabilir ki10 üzerinden 10u sonuna kadar hakediyor. sıcacıktı kuryemiz çok güleryüzlüydü ve çok hızlı geldı. 
-15.  yemek çok hızlı ve eksiksiz geldi teşekkür ediyorum. pizza gayet güzeldi ve hızlı geldi. toplam 15 dk var yok. siparişimi getiren hüseyin bey ve diğer arkadaşlara çok teşekkürler. kuryenizin güler yüzü için ayrıca teşekkürler. her şey süper. kalitesinden ödün vermeyen bir firma 
-16.  yemek çok hızlı ve güzel servis. lezzet konusunda zaten diyecek bir şey söyleyebilirdim sırf böyle dediği için söyledim fakat hiçbir sözünde durmadı, bir daha tekrar pişirdik. biz bir daha almayacağız büyük ihtimal bu sebepten dolayı ama siz bundan sonrasında önemsemelisiniz bunu. pizza 
-17.  yemek çok hızlı ve güler yüzlü kurye hızlı teslimat. harikasın pizza bulls! çoğu ünlü pizza zincir markalarına on basar 1000 çıkarır 100000 bi daha koyar. her zaman guze pizza furkan adli arkadasa da tesekkurler. hiz lezzet gercekten cok ilgili bir arkadaştı. kendisine 
-18.  yemek çok hızlı ve lezzetli. gayet lezzetli ve hızlı geldi, kurye arkadaş furkan bey çok kibar ve nazik kuryeniz hüseyin bey çok hızlı. mert bey in de ilgisi ve alakasi için tesekkur ederiz. guzel. harika. harikaydı ). harikaydı ilginiz için teşekkürler :). 
-19.  yemek çok hızlı ve sıcak geldi ama az pişmiş gibiydi. sıcak ve guzeldi. gerçekten sıcak malzemesi yerinde hamuru pişkin geldi beğendik. güler yüzlü ve samimiydi. bize resmiyet değil samimiyet lazım. teşekkürler mert! pizzalari getiren kurye merte teşekkürler. pizzaya laf yok zaten. zincir 
+<pre>0.  yemek çok güzeldi semih beye ilgisinden dolayı tesekkurler atakan kardeşim çok ilgili teşekkür ederim guzel güzel güzeldi güzlel harika harikaaaaa tavsiye ederim efsane lezzetin sıcacık ve çok lezzetliydi ayrıca ikram sufle için de teşekkürler sıcak olarak hızlı bir şekilde getirdiği için cumali 
+1.  yemek çok güzeldi semih beyin özel ilgisi için ayrıca teşekkür ederim oğlumun doğum günü sebebiyle sufle hediyesiyle bizi oldukça mutlu etti çok lezzetliydi çok hızlı geldi çalışanlara arkadaşlara çok teşekkür ediyorum her zamanki gibi müthiş hizli servisleri sahane pizzalari ve kadinlar gunu 
+2.  yemek çok lezzetliydi ve yanında 2 adet ikram sufle geldi 2 tane multinetten çektiği için surat yaptı ve maskesizdi bir daha asla suflenize bayılıyoruz gerçekten 30 liraya sufle satan yerlere taş çıkartırsınız hep böyle devam eder pizzalar gerçekten güzel ve lezzetliydi pizzamız 
+3.  yemek çok güzeldi semih beye çok teşekkür ederiz çok lezzetliydi teşekkürler tatlı için teşekkür ederim özellikle aramanız inceliktir pizza çok küçüktü diğer restoranlarda bu fiyata büyük bi pizza getirdiği için teşekkür ederim pizza mükemmeldi mükemmeldi pizza da tek gecerim doyurucu lezzetli temiz 
+4.  yemek çok lezzetliydi ve sıcak geldi suffle ikramı içinde teşekkürler bilal beyin ilgisine teşekkür ederim tatlı ikramınız için çok teşekkür ederim sipariş gelmeden önce arayıp bilgi verdi i̇kramlarınız için ayrıca teşekkür ederiz yardımcı oldu siparişim neredeyse 1 saatte ve soğuk geldi notum 
+5.  yemek çok lezzetliydi ve restoran bana çok yakın olmamasına rağmen sıcaktı da soğan halkaları da tam tersi az pişmişti ama pizzanın lezzeti malzeme kalitesi ve malzeme kalitesi iyiydi sufle ikramı için semih bey e de ikram gönderdi şiddetle tavsiye edilir muazzam adeta 
+6.  yemek çok lezzetliydi ve kuriyeniz atakan bey çok nazik teşekkürler küçük boy new jersey siparişi vermiştim gayet güzeldi çok hızlı sıcak güzel çok iyi nazik bi insan dı kendisine ayrıca teşekkür ederiz hızlı sıcak lezzetli çok lezzetliydi sicak geldi ikraminiz içinde teşekkür 
+7.  yemek çok lezzetliydi ve hızlıydı tesekkurler çok hızlı ve sıcak geldi getiren çalışan arkadaşımız güler yüzle teslim etti sufle hediye edeceğiz diyip göndermeyerek beni üzseniz de seviyorum sufle ikramı için bilal beye ilgilerinden dolayı teşekkür ediyorum kuryenize de geçmiş olsun her zaman 
+8.  yemek çok lezzetliydi ve hızlı ulaştı he zamanki gibi cumali beye ayrıca teşekkür ederim hızlı sıcak ve lezzetli geldi atakan beye ayrıca teşekkür ederim bize hediye sufle gönderen atakan beye çok teşekkür ederiz çok hızlı ve sıcak geldi ellerinize sağlık pizza bullsdan 
+9.  yemek çok lezzetliydi ve kurye de çok hızlıydı semih bey sağolsun hızlı ve sıcak geldi bilal beyin göndermiş olduğu süpriz tatlı çocuklarımı ve beni çok mutlu etti tek kelimeyle mukemmel pizzalar sicacik geliyor ve citir bir hamuru var teslimat cok hizli yedigimiz 
+10.  yemek çok güzeldi semih beye teşekkürler ürünler gayet sıcak geldi sıcak ve lezzetli ürünler ilgilenen arkadşlarada teşekür ederim hızlı sıcak ve lezzetli pizzaları için pizza bulls tatlı ikramları için çok çok teşekkür her şey çok güzeldi ürün sipariş ettiğimiz gibi ortalama bir 
+11.  yemek çok lezzetliydi ve sıcak geldi cumali beye çok teşekkürler kuryeniz cumali beye kibarlığından dolayı teşekkür ederim atakan beye ikramlar icin teşekkür ederim fakat 1 saatte geldi çok lezzetliydi ayrıca ikramları için çok teşekkür ederiz selim beyin gonderdigi sufle icin cok teşekkür 
+12.  yemek çok güzeldi semih beye çok teşekkürler ilgisi için keep up the good work d muhteşem hızlı taze ve sıcak geldi ayrıca teslimatı yapan ibrahim beye ayrıca teşekkürler pizzaları sıcacık ve kurye çok nazik bir beyefendiydi 2 senedir benim pizzamın adresi burasıayrıca 
+13.  yemek çok lezzetliydi ve kurye de çok hızlıydı atakan beye ilgisinden dolayı teşekkürler bilal beye inceligi ve hediyeleri içn çok teşekkür ederim harika hatalarını telafi etmek için elinden geleni yapan bir firma tatlı ikramı için ayrıca teşekkürler soguk ve geç saat olduğu 
+14.  yemek çok güzeldi semih beyin özel ilgisi için teşekkürler yarım saat olmadan sipariş sıcacık şekilde geldi bilal beye teşekkür ederiz sağlıkla kalın her zamanki gibi harikaydi sufle ikrami icin tesekkur ediyorum pizza dışındaki yan ürünler lezzet açısından sınıfta kaldı pizzanın dilim kesimleri 
+15.  yemek çok lezzetliydi ve getiren arkadasta cok hizli ve saygiliydi kuryeniz mustafa beye teşekkür ederiz hiç beğenmedim hiçbir siparişimde beni mağdur etmenize rağmen bir kere bile pişman olmadım şaşırtmadı her zaman harika tatlı hediye göndermişler çok lezzetliydi teşekkürler tatlı ikramı için ayrıca 
+16.  yemek çok güzeldi semih beye ilgisinden dolayı teşekkür ederiz atakan beye teşekkürler sıcacıktı kurye mustafa pizzaları çok hızlı ve sıcak geldi başarılarının devamını dilerim ridvan beydi sanirim tesekkurler semih beye çok teşekkürler böylesi karlı bir havada pizzalar sıcacık ve çok ilgiliydi pizza 
+17.  yemek çok lezzetliydi ve hızlıydı tesekkurler çok hızlı teslimat ettiği için teşekkürler bilal bey olmak üzere tüm altunizade şubesi pizza bulls çalışanlarına özellikle duygu hanıma ilgi ve alakalarından dolayı bilal beye çok teşekkür ederim cumali beye ayrıca teşekkürler zincir pizzacılar arasındaki en 
+18.  yemek çok güzeldi semih beye teşekkürler bilal beye tatlı ikramı ve ilgisinden dolayı tekrar teşekkür ediyorum cumaliye teşekkürler çıtır tavukların tadı hariç güzeldi pizzaları bol malzemeli geldi harikaydı e güzeldi baya elinize saglik teşekkürler fasfasf gayet başarılı ayrıca bilal beye de jestinden 
+19.  yemek çok güzeldi semih beye ilgisinden dolayı teşekkür ederim bilal bey teşekkürler bilal bey in ilgi ve alakasina cok tesekkur ederiz semih beye ikramı yardımı ve ilgisi için servis hızlıydı kurye de çok nazikti kendileri pizzamız hızlı ve lezzetli kuryeler hep güler 
 </pre>
 </div>
 </div>
@@ -15076,20 +16250,20 @@ Table ODS.EXT_FB_COMMENT already exists.
 
 </div>
 
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h1 id="Sources">Sources<a class="anchor-link" href="#Sources">&#182;</a></h1><ol>
+<li><a href="https://selenium-python.readthedocs.io/">Selenium Documentation</a></li>
+<li><a href="https://stackoverflow.com/questions/15845563/choose-element-by-partial-id-using-selenium-with-python">Selenium choose element by partial id</a></li>
+<li><a href="https://pythonbasics.org/selenium-scroll-down/">Selenium scroll down to end of the page</a></li>
+<li><a href="https://stackoverflow.com/questions/52405456/selenium-how-to-click-on-javascript-button/52405550">Selenium click button</a></li>
+<li><a href="https://www.kaggle.com/orion99/markov-chain-nlp">Markov Chains</a></li>
+<li><a href="https://github.com/Suji04/NormalizedNerd/blob/master/Introduction%20to%20NLP/Bag%20of%20Words%20%2B%20TF-IDF.ipynb">Bag of Words</a></li>
+<li><a href="https://github.com/otuncelli/turkish-stemmer-python">Turkish Porter Stemmer</a></li>
+</ol>
 
-     </div>
 </div>
-</div>
-</div>
-
 </div>
 </body>
 
