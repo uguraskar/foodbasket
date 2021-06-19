@@ -14769,48 +14769,48 @@ Table EDW.DWH_FB_COMMENT already exists.
   </thead>
   <tbody>
     <tr>
-      <th>41</th>
-      <td>fitchino-avcilar-ambarli-mah-istanbul</td>
+      <th>37</th>
+      <td>pizza-lazza-kagithane-sultan-selim-sanayi-mah-...</td>
     </tr>
     <tr>
-      <th>17</th>
-      <td>dominos-pizza-atasehir-ataturk-mah-girne-cad-i...</td>
+      <th>32</th>
+      <td>apizza-legal-tuzla-orta-mah-istanbul</td>
     </tr>
     <tr>
-      <th>56</th>
-      <td>kurucesme-kahvesi-atasehir-barbaros-mah-istanbul</td>
+      <th>20</th>
+      <td>kervan-pide-lahmacun-sisli-izzet-pasa-mah-ista...</td>
     </tr>
     <tr>
-      <th>72</th>
-      <td>bocek-kadikoy-caferaga-mah-moda-istanbul</td>
+      <th>23</th>
+      <td>azderinn-kantina-pizza-besiktas-arnavutkoy-mah...</td>
     </tr>
     <tr>
-      <th>14</th>
-      <td>mondes-besiktas-mecidiye-mah-istanbul</td>
+      <th>6</th>
+      <td>bigs-pizza-tuzla-aydinli-mah-istanbul</td>
     </tr>
     <tr>
       <th>...</th>
       <td>...</td>
     </tr>
     <tr>
+      <th>10</th>
+      <td>bobbys-burger-kadikoy-dumlupinar-mah-istanbul</td>
+    </tr>
+    <tr>
       <th>42</th>
       <td>food-hall-istanbul-beyoglu-asmalimescit-mah-is...</td>
-    </tr>
-    <tr>
-      <th>61</th>
-      <td>pizza-hut-umraniye-ihlamurkuyu-mah-istanbul</td>
-    </tr>
-    <tr>
-      <th>64</th>
-      <td>un-po-beyoglu-kemankes-mah-istanbul</td>
     </tr>
     <tr>
       <th>43</th>
       <td>vera-pizza-pasta-bakirkoy-cevizlik-mah-istanbul</td>
     </tr>
     <tr>
-      <th>48</th>
-      <td>kafein-plus-kucukcekmece-tevfikbey-mah-sefakoy...</td>
+      <th>60</th>
+      <td>ghost-pizza-kadikoy-caddebostan-mah-istanbul</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>pizza-italyanoo-kucukcekmece-atakent-mah-kanun...</td>
     </tr>
   </tbody>
 </table>
@@ -15387,23 +15387,24 @@ Table EDW.DWH_FB_COMMENT already exists.
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
-<span class="c1">#print(np.shape(labels))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="n">label</span><span class="p">])]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="c1">#print(np.shape(labels))</span>
 
-<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
 
-<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+    <span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -15423,12 +15424,24 @@ Table EDW.DWH_FB_COMMENT already exists.
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
-<pre>&lt;ipython-input-14-57e8c84ed6cb&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
-  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
+<pre>&lt;ipython-input-14-3204ce730710&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
 Total Features after vectorizing: 2733
-Accuracy Score: 31.33%
-F1 Score: 31.33%
-Precision Score: 31.33%
+Accuracy Score for SPEED: 31.33%
+F1 Score for SPEED: 31.33%
+Precision Score for SPEED: 31.33%
+Total Features after vectorizing: 4003
+&lt;ipython-input-14-3204ce730710&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for SERVING: 31.00%
+F1 Score for SERVING: 31.00%
+Precision Score for SERVING: 31.00%
+Total Features after vectorizing: 4003
+&lt;ipython-input-14-3204ce730710&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for FLAVOUR: 28.87%
+F1 Score for FLAVOUR: 28.87%
+Precision Score for FLAVOUR: 28.87%
 </pre>
 </div>
 </div>
@@ -15453,22 +15466,23 @@ Precision Score: 31.33%
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[15]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="n">label</span><span class="p">])]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
 
-<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">()</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">SVC</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
 
-<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+    <span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -15489,11 +15503,23 @@ Precision Score: 31.33%
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
 <pre>Total Features after vectorizing: 2733
-&lt;ipython-input-15-31bcc9e0fb71&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
-  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
-Accuracy Score: 64.19%
-F1 Score: 64.19%
-Precision Score: 64.19%
+&lt;ipython-input-15-f95b5dda4d7a&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for SPEED: 64.19%
+F1 Score for SPEED: 64.19%
+Precision Score for SPEED: 64.19%
+Total Features after vectorizing: 4003
+&lt;ipython-input-15-f95b5dda4d7a&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for SERVING: 64.73%
+F1 Score for SERVING: 64.73%
+Precision Score for SERVING: 64.73%
+&lt;ipython-input-15-f95b5dda4d7a&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Total Features after vectorizing: 4003
+Accuracy Score for FLAVOUR: 62.00%
+F1 Score for FLAVOUR: 62.00%
+Precision Score for FLAVOUR: 62.00%
 </pre>
 </div>
 </div>
@@ -15513,22 +15539,23 @@ Precision Score: 64.19%
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="n">label</span><span class="p">])]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
 
-<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">LinearSVC</span><span class="p">()</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">LinearSVC</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
 
-<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+    <span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -15549,11 +15576,23 @@ Precision Score: 64.19%
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
 <pre>Total Features after vectorizing: 2733
-&lt;ipython-input-16-abecfc9eee10&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
-  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
-Accuracy Score: 60.05%
-F1 Score: 60.05%
-Precision Score: 60.05%
+&lt;ipython-input-16-e75e2f9c6e01&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for SPEED: 60.05%
+F1 Score for SPEED: 60.05%
+Precision Score for SPEED: 60.05%
+Total Features after vectorizing: 4003
+&lt;ipython-input-16-e75e2f9c6e01&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for SERVING: 61.63%
+F1 Score for SERVING: 61.63%
+Precision Score for SERVING: 61.63%
+Total Features after vectorizing: 4003
+&lt;ipython-input-16-e75e2f9c6e01&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for FLAVOUR: 58.20%
+F1 Score for FLAVOUR: 58.20%
+Precision Score for FLAVOUR: 58.20%
 </pre>
 </div>
 </div>
@@ -15573,31 +15612,32 @@ Precision Score: 60.05%
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9600</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="n">label</span><span class="p">])]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
 
-<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
 
-<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">],</span>
-    <span class="s1">&#39;min_samples_split&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
-    <span class="p">}</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">15</span><span class="p">],</span>
+        <span class="s1">&#39;min_samples_split&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]</span>
+        <span class="p">}</span>
 
-<span class="n">gscv</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">DecisionTreeClassifier</span><span class="p">(),</span> <span class="n">params</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">gscv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best parameters: </span><span class="si">{best_parameters}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">best_parameters</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_params_</span><span class="p">))</span>
+    <span class="n">gscv</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">DecisionTreeClassifier</span><span class="p">(),</span> <span class="n">params</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">gscv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best parameters: </span><span class="si">{best_parameters}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">best_parameters</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_params_</span><span class="p">))</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_estimator_</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_estimator_</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
 
-<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+    <span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -15617,13 +15657,27 @@ Precision Score: 60.05%
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>Total Features after vectorizing: 2619
-&lt;ipython-input-17-de71e106f8b8&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
-  not_null_df = comment_df[0:9600][pd.notnull(comment_df[&#39;SPEED&#39;])]
+<pre>Total Features after vectorizing: 2733
+&lt;ipython-input-17-39bfdc06108a&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Best parameters: {&#39;max_depth&#39;: 14, &#39;min_samples_split&#39;: 2}
+Accuracy Score for SPEED: 63.60%
+F1 Score for SPEED: 63.60%
+Precision Score for SPEED: 63.60%
+Total Features after vectorizing: 4003
+&lt;ipython-input-17-39bfdc06108a&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Best parameters: {&#39;max_depth&#39;: 10, &#39;min_samples_split&#39;: 3}
+Accuracy Score for SERVING: 63.23%
+F1 Score for SERVING: 63.23%
+Precision Score for SERVING: 63.23%
+Total Features after vectorizing: 4003&lt;ipython-input-17-39bfdc06108a&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+
 Best parameters: {&#39;max_depth&#39;: 13, &#39;min_samples_split&#39;: 2}
-Accuracy Score: 63.09%
-F1 Score: 63.09%
-Precision Score: 63.09%
+Accuracy Score for FLAVOUR: 59.33%
+F1 Score for FLAVOUR: 59.33%
+Precision Score for FLAVOUR: 59.33%
 </pre>
 </div>
 </div>
@@ -15643,22 +15697,23 @@ Precision Score: 63.09%
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9600</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9600</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="n">label</span><span class="p">])]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
 
-<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
 
-<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+    <span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -15679,11 +15734,23 @@ Precision Score: 63.09%
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
 <pre>Total Features after vectorizing: 2619
-&lt;ipython-input-18-eccb7253df41&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
-  not_null_df = comment_df[0:9600][pd.notnull(comment_df[&#39;SPEED&#39;])]
-Accuracy Score: 63.19%
-F1 Score: 63.19%
-Precision Score: 63.19%
+&lt;ipython-input-18-bd0b3e30edb2&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[label])]
+Accuracy Score for SPEED: 63.19%
+F1 Score for SPEED: 63.19%
+Precision Score for SPEED: 63.19%
+Total Features after vectorizing: 3913
+&lt;ipython-input-18-bd0b3e30edb2&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[label])]
+Accuracy Score for SERVING: 64.90%
+F1 Score for SERVING: 64.90%
+Precision Score for SERVING: 64.90%
+Total Features after vectorizing: 3913
+&lt;ipython-input-18-bd0b3e30edb2&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[label])]
+Accuracy Score for FLAVOUR: 63.12%
+F1 Score for FLAVOUR: 63.12%
+Precision Score for FLAVOUR: 63.12%
 </pre>
 </div>
 </div>
@@ -15708,23 +15775,24 @@ Precision Score: 63.19%
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[19]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
-<span class="c1">#print(np.shape(labels))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="n">label</span><span class="p">])]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="c1">#print(np.shape(labels))</span>
 
-<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
 
-<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+    <span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -15745,11 +15813,23 @@ Precision Score: 63.19%
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
 <pre>Total Features after vectorizing: 2733
-&lt;ipython-input-19-6f54f08c5ef9&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
-  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
-Accuracy Score: 31.43%
-F1 Score: 31.43%
-Precision Score: 31.43%
+&lt;ipython-input-19-b67fda193b23&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for SPEED: 31.43%
+F1 Score for SPEED: 31.43%
+Precision Score for SPEED: 31.43%
+Total Features after vectorizing: 4003
+&lt;ipython-input-19-b67fda193b23&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for SERVING: 31.40%
+F1 Score for SERVING: 31.40%
+Precision Score for SERVING: 31.40%
+Total Features after vectorizing: 4003
+&lt;ipython-input-19-b67fda193b23&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for FLAVOUR: 28.57%
+F1 Score for FLAVOUR: 28.57%
+Precision Score for FLAVOUR: 28.57%
 </pre>
 </div>
 </div>
@@ -15774,33 +15854,34 @@ Precision Score: 31.43%
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[20]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="n">label</span><span class="p">])]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
 
-<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
 
-<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">],</span>
-    <span class="c1">#&#39;C&#39;: [1.4,1.5,1.6],</span>
-    <span class="s1">&#39;kernel&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;rbf&#39;</span><span class="p">]</span>
-    <span class="c1">#&#39;kernel&#39;: [&#39;linear&#39;,&#39;rbf&#39;,&#39;sigmoid&#39;]</span>
-    <span class="p">}</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;C&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.5</span><span class="p">],</span>
+        <span class="c1">#&#39;C&#39;: [1.4,1.5,1.6],</span>
+        <span class="s1">&#39;kernel&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;rbf&#39;</span><span class="p">]</span>
+        <span class="c1">#&#39;kernel&#39;: [&#39;linear&#39;,&#39;rbf&#39;,&#39;sigmoid&#39;]</span>
+        <span class="p">}</span>
 
-<span class="n">gscv</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">SVC</span><span class="p">(),</span> <span class="n">params</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">gscv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best parameters: </span><span class="si">{best_parameters}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">best_parameters</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_params_</span><span class="p">))</span>
+    <span class="n">gscv</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">SVC</span><span class="p">(),</span> <span class="n">params</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">gscv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best parameters: </span><span class="si">{best_parameters}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">best_parameters</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_params_</span><span class="p">))</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_estimator_</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_estimator_</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
 
-<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+    <span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -15821,12 +15902,26 @@ Precision Score: 31.43%
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
 <pre>Total Features after vectorizing: 2733
-&lt;ipython-input-20-ed41f9384cd3&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
-  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
+&lt;ipython-input-20-b836e0614bf6&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
 Best parameters: {&#39;C&#39;: 1.5, &#39;kernel&#39;: &#39;rbf&#39;}
-Accuracy Score: 65.76%
-F1 Score: 65.76%
-Precision Score: 65.76%
+Accuracy Score for SPEED: 65.76%
+F1 Score for SPEED: 65.76%
+Precision Score for SPEED: 65.76%
+Total Features after vectorizing: 4003
+&lt;ipython-input-20-b836e0614bf6&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Best parameters: {&#39;C&#39;: 1.5, &#39;kernel&#39;: &#39;rbf&#39;}
+Accuracy Score for SERVING: 66.67%
+F1 Score for SERVING: 66.67%
+Precision Score for SERVING: 66.67%
+Total Features after vectorizing: 4003
+&lt;ipython-input-20-b836e0614bf6&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Best parameters: {&#39;C&#39;: 1.5, &#39;kernel&#39;: &#39;rbf&#39;}
+Accuracy Score for FLAVOUR: 63.53%
+F1 Score for FLAVOUR: 63.53%
+Precision Score for FLAVOUR: 63.53%
 </pre>
 </div>
 </div>
@@ -15846,22 +15941,23 @@ Precision Score: 65.76%
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[21]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10000</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="n">label</span><span class="p">])]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
 
-<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">LinearSVC</span><span class="p">()</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">LinearSVC</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
 
-<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+    <span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -15882,11 +15978,23 @@ Precision Score: 65.76%
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
 <pre>Total Features after vectorizing: 2733
-&lt;ipython-input-21-61109543768c&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
-  not_null_df = comment_df[0:10000][pd.notnull(comment_df[&#39;SPEED&#39;])]
-Accuracy Score: 63.05%
-F1 Score: 63.05%
-Precision Score: 63.05%
+&lt;ipython-input-21-19bdb136a765&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for SPEED: 63.05%
+F1 Score for SPEED: 63.05%
+Precision Score for SPEED: 63.05%
+Total Features after vectorizing: 4003
+&lt;ipython-input-21-19bdb136a765&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for SERVING: 65.10%
+F1 Score for SERVING: 65.10%
+Precision Score for SERVING: 65.10%
+Total Features after vectorizing: 4003
+&lt;ipython-input-21-19bdb136a765&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:10000][pd.notnull(comment_df[label])]
+Accuracy Score for FLAVOUR: 61.67%
+F1 Score for FLAVOUR: 61.67%
+Precision Score for FLAVOUR: 61.67%
 </pre>
 </div>
 </div>
@@ -15906,31 +16014,32 @@ Precision Score: 63.05%
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[22]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9600</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9600</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="n">label</span><span class="p">])]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
 
-<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
 
-<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">],</span>
-    <span class="s1">&#39;min_samples_split&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
-    <span class="p">}</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;max_depth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">],</span>
+        <span class="s1">&#39;min_samples_split&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+        <span class="p">}</span>
 
-<span class="n">gscv</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">DecisionTreeClassifier</span><span class="p">(),</span> <span class="n">params</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">gscv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best parameters: </span><span class="si">{best_parameters}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">best_parameters</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_params_</span><span class="p">))</span>
+    <span class="n">gscv</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">DecisionTreeClassifier</span><span class="p">(),</span> <span class="n">params</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">gscv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best parameters: </span><span class="si">{best_parameters}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">best_parameters</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_params_</span><span class="p">))</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_estimator_</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">gscv</span><span class="o">.</span><span class="n">best_estimator_</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
 
-<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+    <span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -15951,12 +16060,26 @@ Precision Score: 63.05%
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
 <pre>Total Features after vectorizing: 2619
-&lt;ipython-input-22-b6a83c6a06e2&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
-  not_null_df = comment_df[0:9600][pd.notnull(comment_df[&#39;SPEED&#39;])]
+&lt;ipython-input-22-f256257235fc&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[label])]
 Best parameters: {&#39;max_depth&#39;: 10, &#39;min_samples_split&#39;: 2}
-Accuracy Score: 62.77%
-F1 Score: 62.77%
-Precision Score: 62.77%
+Accuracy Score for SPEED: 62.93%
+F1 Score for SPEED: 62.93%
+Precision Score for SPEED: 62.93%
+Total Features after vectorizing: 3913
+&lt;ipython-input-22-f256257235fc&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[label])]
+Best parameters: {&#39;max_depth&#39;: 9, &#39;min_samples_split&#39;: 2}
+Accuracy Score for SERVING: 61.91%
+F1 Score for SERVING: 61.91%
+Precision Score for SERVING: 61.91%
+Total Features after vectorizing: 3913
+&lt;ipython-input-22-f256257235fc&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[label])]
+Best parameters: {&#39;max_depth&#39;: 9, &#39;min_samples_split&#39;: 3}
+Accuracy Score for FLAVOUR: 59.93%
+F1 Score for FLAVOUR: 59.93%
+Precision Score for FLAVOUR: 59.93%
 </pre>
 </div>
 </div>
@@ -15976,22 +16099,23 @@ Precision Score: 62.77%
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[23]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9600</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">])]</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
-<span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">min_df</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">not_null_df</span> <span class="o">=</span> <span class="n">comment_df</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">9600</span><span class="p">][</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">comment_df</span><span class="p">[</span><span class="n">label</span><span class="p">])]</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">not_null_df</span><span class="p">[</span><span class="s1">&#39;COMMENT_TEXT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">not_null_df</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Total Features after vectorizing: </span><span class="si">{total_features}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">total_features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">features</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
 
-<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+    <span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">penalty</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">)</span>
 
-<span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
+    <span class="n">label_prediction</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">features_test</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{accuracy_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">accuracy_score</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;F1 Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{f1_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f1_score</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Precision Score for </span><span class="si">{label}</span><span class="s2">: </span><span class="si">{precision_score:0.2f}</span><span class="s2">%&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">precision_score</span>  <span class="o">=</span> <span class="n">precision_score</span><span class="p">(</span><span class="n">labels_test</span><span class="p">,</span> <span class="n">label_prediction</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s1">&#39;micro&#39;</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -16012,11 +16136,23 @@ Precision Score: 62.77%
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
 <pre>Total Features after vectorizing: 2619
-&lt;ipython-input-23-3703865826cd&gt;:2: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
-  not_null_df = comment_df[0:9600][pd.notnull(comment_df[&#39;SPEED&#39;])]
-Accuracy Score: 65.71%
-F1 Score: 65.71%
-Precision Score: 65.71%
+&lt;ipython-input-23-d41c2553ecea&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[label])]
+Accuracy Score for SPEED: 65.71%
+F1 Score for SPEED: 65.71%
+Precision Score for SPEED: 65.71%
+Total Features after vectorizing: 3913
+&lt;ipython-input-23-d41c2553ecea&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[label])]
+Accuracy Score for SERVING: 65.73%
+F1 Score for SERVING: 65.73%
+Precision Score for SERVING: 65.73%
+Total Features after vectorizing: 3913
+&lt;ipython-input-23-d41c2553ecea&gt;:3: UserWarning: Boolean Series key will be reindexed to match DataFrame index.
+  not_null_df = comment_df[0:9600][pd.notnull(comment_df[label])]
+Accuracy Score for FLAVOUR: 63.96%
+F1 Score for FLAVOUR: 63.96%
+Precision Score for FLAVOUR: 63.96%
 </pre>
 </div>
 </div>
@@ -16222,26 +16358,26 @@ Precision Score: 65.71%
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>0.  yemek çok güzeldi semih beye ilgisinden dolayı tesekkurler atakan kardeşim çok ilgili teşekkür ederim guzel güzel güzeldi güzlel harika harikaaaaa tavsiye ederim efsane lezzetin sıcacık ve çok lezzetliydi ayrıca ikram sufle için de teşekkürler sıcak olarak hızlı bir şekilde getirdiği için cumali 
-1.  yemek çok güzeldi semih beyin özel ilgisi için ayrıca teşekkür ederim oğlumun doğum günü sebebiyle sufle hediyesiyle bizi oldukça mutlu etti çok lezzetliydi çok hızlı geldi çalışanlara arkadaşlara çok teşekkür ediyorum her zamanki gibi müthiş hizli servisleri sahane pizzalari ve kadinlar gunu 
-2.  yemek çok lezzetliydi ve yanında 2 adet ikram sufle geldi 2 tane multinetten çektiği için surat yaptı ve maskesizdi bir daha asla suflenize bayılıyoruz gerçekten 30 liraya sufle satan yerlere taş çıkartırsınız hep böyle devam eder pizzalar gerçekten güzel ve lezzetliydi pizzamız 
-3.  yemek çok güzeldi semih beye çok teşekkür ederiz çok lezzetliydi teşekkürler tatlı için teşekkür ederim özellikle aramanız inceliktir pizza çok küçüktü diğer restoranlarda bu fiyata büyük bi pizza getirdiği için teşekkür ederim pizza mükemmeldi mükemmeldi pizza da tek gecerim doyurucu lezzetli temiz 
-4.  yemek çok lezzetliydi ve sıcak geldi suffle ikramı içinde teşekkürler bilal beyin ilgisine teşekkür ederim tatlı ikramınız için çok teşekkür ederim sipariş gelmeden önce arayıp bilgi verdi i̇kramlarınız için ayrıca teşekkür ederiz yardımcı oldu siparişim neredeyse 1 saatte ve soğuk geldi notum 
-5.  yemek çok lezzetliydi ve restoran bana çok yakın olmamasına rağmen sıcaktı da soğan halkaları da tam tersi az pişmişti ama pizzanın lezzeti malzeme kalitesi ve malzeme kalitesi iyiydi sufle ikramı için semih bey e de ikram gönderdi şiddetle tavsiye edilir muazzam adeta 
-6.  yemek çok lezzetliydi ve kuriyeniz atakan bey çok nazik teşekkürler küçük boy new jersey siparişi vermiştim gayet güzeldi çok hızlı sıcak güzel çok iyi nazik bi insan dı kendisine ayrıca teşekkür ederiz hızlı sıcak lezzetli çok lezzetliydi sicak geldi ikraminiz içinde teşekkür 
-7.  yemek çok lezzetliydi ve hızlıydı tesekkurler çok hızlı ve sıcak geldi getiren çalışan arkadaşımız güler yüzle teslim etti sufle hediye edeceğiz diyip göndermeyerek beni üzseniz de seviyorum sufle ikramı için bilal beye ilgilerinden dolayı teşekkür ediyorum kuryenize de geçmiş olsun her zaman 
-8.  yemek çok lezzetliydi ve hızlı ulaştı he zamanki gibi cumali beye ayrıca teşekkür ederim hızlı sıcak ve lezzetli geldi atakan beye ayrıca teşekkür ederim bize hediye sufle gönderen atakan beye çok teşekkür ederiz çok hızlı ve sıcak geldi ellerinize sağlık pizza bullsdan 
-9.  yemek çok lezzetliydi ve kurye de çok hızlıydı semih bey sağolsun hızlı ve sıcak geldi bilal beyin göndermiş olduğu süpriz tatlı çocuklarımı ve beni çok mutlu etti tek kelimeyle mukemmel pizzalar sicacik geliyor ve citir bir hamuru var teslimat cok hizli yedigimiz 
-10.  yemek çok güzeldi semih beye teşekkürler ürünler gayet sıcak geldi sıcak ve lezzetli ürünler ilgilenen arkadşlarada teşekür ederim hızlı sıcak ve lezzetli pizzaları için pizza bulls tatlı ikramları için çok çok teşekkür her şey çok güzeldi ürün sipariş ettiğimiz gibi ortalama bir 
-11.  yemek çok lezzetliydi ve sıcak geldi cumali beye çok teşekkürler kuryeniz cumali beye kibarlığından dolayı teşekkür ederim atakan beye ikramlar icin teşekkür ederim fakat 1 saatte geldi çok lezzetliydi ayrıca ikramları için çok teşekkür ederiz selim beyin gonderdigi sufle icin cok teşekkür 
-12.  yemek çok güzeldi semih beye çok teşekkürler ilgisi için keep up the good work d muhteşem hızlı taze ve sıcak geldi ayrıca teslimatı yapan ibrahim beye ayrıca teşekkürler pizzaları sıcacık ve kurye çok nazik bir beyefendiydi 2 senedir benim pizzamın adresi burasıayrıca 
-13.  yemek çok lezzetliydi ve kurye de çok hızlıydı atakan beye ilgisinden dolayı teşekkürler bilal beye inceligi ve hediyeleri içn çok teşekkür ederim harika hatalarını telafi etmek için elinden geleni yapan bir firma tatlı ikramı için ayrıca teşekkürler soguk ve geç saat olduğu 
-14.  yemek çok güzeldi semih beyin özel ilgisi için teşekkürler yarım saat olmadan sipariş sıcacık şekilde geldi bilal beye teşekkür ederiz sağlıkla kalın her zamanki gibi harikaydi sufle ikrami icin tesekkur ediyorum pizza dışındaki yan ürünler lezzet açısından sınıfta kaldı pizzanın dilim kesimleri 
-15.  yemek çok lezzetliydi ve getiren arkadasta cok hizli ve saygiliydi kuryeniz mustafa beye teşekkür ederiz hiç beğenmedim hiçbir siparişimde beni mağdur etmenize rağmen bir kere bile pişman olmadım şaşırtmadı her zaman harika tatlı hediye göndermişler çok lezzetliydi teşekkürler tatlı ikramı için ayrıca 
-16.  yemek çok güzeldi semih beye ilgisinden dolayı teşekkür ederiz atakan beye teşekkürler sıcacıktı kurye mustafa pizzaları çok hızlı ve sıcak geldi başarılarının devamını dilerim ridvan beydi sanirim tesekkurler semih beye çok teşekkürler böylesi karlı bir havada pizzalar sıcacık ve çok ilgiliydi pizza 
-17.  yemek çok lezzetliydi ve hızlıydı tesekkurler çok hızlı teslimat ettiği için teşekkürler bilal bey olmak üzere tüm altunizade şubesi pizza bulls çalışanlarına özellikle duygu hanıma ilgi ve alakalarından dolayı bilal beye çok teşekkür ederim cumali beye ayrıca teşekkürler zincir pizzacılar arasındaki en 
-18.  yemek çok güzeldi semih beye teşekkürler bilal beye tatlı ikramı ve ilgisinden dolayı tekrar teşekkür ediyorum cumaliye teşekkürler çıtır tavukların tadı hariç güzeldi pizzaları bol malzemeli geldi harikaydı e güzeldi baya elinize saglik teşekkürler fasfasf gayet başarılı ayrıca bilal beye de jestinden 
-19.  yemek çok güzeldi semih beye ilgisinden dolayı teşekkür ederim bilal bey teşekkürler bilal bey in ilgi ve alakasina cok tesekkur ederiz semih beye ikramı yardımı ve ilgisi için servis hızlıydı kurye de çok nazikti kendileri pizzamız hızlı ve lezzetli kuryeler hep güler 
+<pre>0.  yemek çok güzeldi semih beye çok teşekkür ederim hizliydi tesekkurler i̇lgileri ve kibarlıkları için teşekkürler sanırım ismi bilal idi yanlış hatırlıo da olabilirim çok teşekkürler i̇smini yanlis hatirliyor olabilirim ama bilal beye teşekkürler gerek hızı gerek lezzeti ile oldukça kaliteli bir firma 
+1.  yemek çok lezzetliydi ve vaktinde geldi bilal beye ilgisinden ve ikramından dolayı ayrıca teşekkür ediyorum harika bir pizza deneyimi hızı ve güler yüzlü harikasınız sonsuza kadar sipariş vereceğim tek pizzacı burası tad on numara her şey çok güzeldi çok hızlı hem de 
+2.  yemek çok güzeldi semih beye çok teşekkürler her şey çok güzeldi ama keşke sufleleri de gönderseydiniz alperen bey sagolsun pizza sufle cok guzeldi atacan bey e cok tesekkurler her zaman ki mükemmeldi emeğiniz icin teşekkür ederiz sanirim zincir pizzacilar arasında en iyisi 
+3.  yemek çok güzeldi semih beye teşekkürler cok hizli ve saygiliydi kuryeniz mustafa beye nezaketi ve güleryüzü için teşekkürler atakan bey i̇lgi ve alakanız için tşekkür ederim i̇lginize teşekkürler blal bey i̇lk defa oluyor şaşırdık biz de kurye arkadaşa teşekkür ederim mutlu yıllar 
+4.  yemek çok lezzetliydi ve hızlı ulaştı servisi yapan arkadaş ali gayet kibardı pizza beklediğimden lezzetliydi teşekkür ederiz deniz ürünlü pizzası bu bölgenin en iyisiydi diyebilirim özellikle kentuncky pizza birde nezaketiniz ve ikramınızdan dolayı teşekkür ederiz semih beye ikramı için de güzeldi harika 
+5.  yemek çok lezzetliydi ve her şey harikaydı notlar okunmuştu ayrıca ikram için teşekkürler atakan beye çok teşekkür ederiz çok lezzetli ve çıtır çıtır ayrıca damla hanıma ilgisi için teşekkürler yarım saat olmadan sipariş sıcacık şekilde geldi süreçle ilgili ilgi ve alaka çok 
+6.  yemek çok lezzetliydi ve getiren arkadasta cok hizli ve saygiliydi kuryeniz mustafa beye teşekkür ediyoruz her zamanki gibi çok güzel her sipasirimizde en az bir bazen de iki sefer hem hızlı hem de hijyenik teşekkürler hem pizzaları güzel hem de özeni için 
+7.  yemek çok lezzetliydi ve her şey çok güzeldi ilgisi ve tatlı ikramı için ayrıca teşekkür ederiz ikram sufle için da atakan beye teşekkürler i̇lgisi için semih bey e ikram için arkadaşa tekrardan teşekkürler i̇lgi alaka ve hediye tatlı için teşekkürler özellikle kurye 
+8.  yemek çok güzeldi semih beyin özel ilgisi için teşekkür ederim gayet guzeldi tesekkurler new york pizzasını denedim lezzetliydi kenar sos benlik değildi sanırım mayonezli bir sos pizza baharatı ve pizza gayet başarılıydı tavsiye ederim efsane lezzetin sıcacık ve lezzetliydi sufle ikramınız için 
+9.  yemek çok güzeldi semih beyin özel ilgisi bu müthiş tadı ve hizmeti daha da değerli hale getirdi biraz geç geldi yaklaşık 1 saati buldu tadı yerindeydi çok hızlı geldi kurye cumali beye tatlı ikramı yapmak istiyoruz demeniz çok büyük incelik soğuk sufle 
+10.  yemek çok güzeldi semih beyin özel ilgisi için teşekkür ederim çokmiyiyidi dumanı üstündeyken geliyor resmen bir de her şey için teşekkürler sıcak geldi lezzetli pizza bilal beyin ilgisine çok teşekkür ederiz kurye cumali beye teşekkürler çok hoş çok kötüydü tadı olsun malzemelerin 
+11.  yemek çok lezzetliydi ve restoran bana çok yakın olmamasına rağmen sıcaktı da soğan halkaları da ayrıca güler yüzü çok memnun kaldık her zaman ki gibi 1010 bir pizzaydı paketler özenliydi çok hızlı ve çok lezzetliydi i̇lgilisi için öncelikle cumali beye teşekkürler çok 
+12.  yemek çok lezzetliydi ve her şey çok güzeldi i̇kram için teşekkürler i̇lginiz ve güzel yüzünden dolayı özellikle çok teşekkür ederim mis mis mustafa beyin servisi çok iyiydi teşekkür ediyorum kendisine mükemmell öncelikle bilal bey size ayrıca teşekkür ederim pizza harikaydıı muhtesem pizza 
+13.  yemek çok güzeldi semih bey harikasınız sıcak geldi jambon olmasin misir olsun demistim tersini yapmislar kralını bozar çok iyi lezzet ve çok soğuktu aç olmasaydım iade edecektim pizza çok güzeldi ayrıca yardımlarından dolayı altunizade bulls personeli bilal bey her şey olması gerektiği 
+14.  yemek çok lezzetliydi ve kuriyeniz atakan bey çok nezaketliydi i̇kramımız için teşekkür ederim kolay gelsin her şey çok iyiydi patates pizza çıtır tavuk hepsi sıcacık gelmişti çok memnun etti ancak pizzanın lezzetine verdiğim puan tamamen pizza bullsa yöneliktir atakan beyin servisten memnun 
+15.  yemek çok güzeldi semih bey harikasınız sıcak geldi atakana teşekkürler her zamanki gibi oldukça hızlı bir siparişti i̇kramınız için de teşekkür ederiz bilal bey herşey için sufleler harikaydı ayrıca atakan beye tatlı için teşekkürler 3 her zamanki gibi ellerinize sağlık lezzet ve 
+16.  yemek çok lezzetliydi ve her şey güzeldi teşekkürler gerçekten çok kötüydü en kısa sürede geldi ve lezzetliydi tatlı ikramı için de ayrıca teşekkür ederim atakan beye ilgisinden dolayı teşekkür ederim çok hızlı ve güzeldi ellerinize sağlık sıcacık gelen pizzamız ve suflemiz için 
+17.  yemek çok lezzetliydi ve vaktinde geldi bilal beye ilgisinden dolayi tesekkurler lezzetliydi ve getiren cumali beye teşekkür ederiz yemeksepetinde üsküdarın en iyi pizza demekten başka bir malzemenin yada pizza sosunun tadını alamadım i̇ki dilim yiyip bırakmak zorunda kaldım belki müsait değilim neden 
+18.  yemek çok güzeldi semih beyin özel ilgisi bu müthiş tadı ve hizmeti daha da sipariş vermem bullstan çok teşekkür ederiz lezzetli ve hızlı geliyor lezzeti de gayet tatmin edicidir buffalo sos yerine barbekü sos geldi onu istesem o şekilde sipariş verirdim zaten 
+19.  yemek çok lezzetliydi ve hızlıydı tesekkurler çok hızlı sıcacık geldi yemeğimiz üstelik yola çıkmadan önce arayıp bilgi verdi ayrica ikram olarak 2 sufle yolladi hiz ve lezzet 10 numaraydi bilal beye ilgileri ve ikramlari icin cok tesekkurler her seyiyle on numara her 
 </pre>
 </div>
 </div>
