@@ -14304,6 +14304,12 @@ a.anchor-link {
 <span class="kn">import</span> <span class="nn">nltk</span>
 <span class="kn">import</span> <span class="nn">joblib</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">keras</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">selenium</span> <span class="kn">import</span> <span class="n">webdriver</span>
 <span class="kn">from</span> <span class="nn">selenium.webdriver.chrome.options</span> <span class="kn">import</span> <span class="n">Options</span>
@@ -14321,6 +14327,14 @@ a.anchor-link {
 <span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="kn">import</span> <span class="n">DecisionTreeClassifier</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span><span class="p">,</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">precision_score</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">GridSearchCV</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">keras.utils</span> <span class="kn">import</span> <span class="n">np_utils</span>
+<span class="kn">from</span> <span class="nn">keras.layers.core</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Activation</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">Flatten</span>
+<span class="kn">from</span> <span class="nn">keras.layers.convolutional</span> <span class="kn">import</span> <span class="n">Convolution2D</span><span class="p">,</span> <span class="n">MaxPooling2D</span>
+<span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="kn">import</span> <span class="n">SGD</span><span class="p">,</span> <span class="n">RMSprop</span>
+<span class="kn">from</span> <span class="nn">keras.utils</span> <span class="kn">import</span> <span class="n">np_utils</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">shuffle</span>
 
 <span class="n">nltk</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s1">&#39;stopwords&#39;</span><span class="p">,</span> <span class="n">quiet</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -14332,6 +14346,8 @@ a.anchor-link {
 
 <span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">()</span>
 <span class="n">options</span><span class="o">.</span><span class="n">binary_location</span> <span class="o">=</span> <span class="n">chrome_path</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">check_if_table_exists</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">):</span>
     <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;select exists(select * from information_schema.tables where table_schema=&#39;</span><span class="si">{schema}</span><span class="s2">&#39; AND table_name=&#39;</span><span class="si">{table}</span><span class="s2">&#39;)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">table</span><span class="o">=</span><span class="n">table</span><span class="p">))</span>
@@ -14376,8 +14392,14 @@ a.anchor-link {
     <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[,.</span><span class="se">\&quot;</span><span class="s2">\&#39;!@#$%^&amp;*()</span><span class="si">{}</span><span class="s2">?/;`~:&lt;&gt;+=-</span><span class="se">\\</span><span class="s2">]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">text</span>
-    
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">webpage_scroll_down</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="n">scroll_speed</span><span class="p">):</span>
+    <span class="n">total_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">driver</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="s2">&quot;return document.body.scrollHeight&quot;</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">total_height</span><span class="p">,</span> <span class="n">scroll_speed</span><span class="p">):</span>
+        <span class="n">driver</span><span class="o">.</span><span class="n">execute_script</span><span class="p">(</span><span class="s2">&quot;window.scrollTo(0, </span><span class="si">{}</span><span class="s2">);&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">byte_image_to_numpy_array</span><span class="p">(</span><span class="n">byte_image</span><span class="p">,</span> <span class="n">image_size</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">byte_image</span><span class="p">))),</span> <span class="p">(</span><span class="n">image_size</span><span class="p">,</span> <span class="n">image_size</span><span class="p">))</span>
 </pre></div>
 
      </div>
@@ -14455,6 +14477,40 @@ a.anchor-link {
     <span class="n">end_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Table ODS.EXT_FB_COMMENT created in </span><span class="si">{execute_time}</span><span class="s2"> seconds.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">execute_time</span><span class="o">=</span><span class="n">end_time</span><span class="o">-</span><span class="n">start_time</span><span class="p">))</span>
 
+<span class="k">if</span><span class="p">(</span><span class="n">check_if_table_exists</span><span class="p">(</span><span class="s1">&#39;ODS&#39;</span><span class="p">,</span><span class="s1">&#39;EXT_FB_PRODUCT_IMAGE&#39;</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Table ODS.EXT_FB_PRODUCT_IMAGE already exists.&#39;</span><span class="p">)</span>   
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    CREATE TABLE &quot;ODS&quot;.&quot;EXT_FB_PRODUCT_IMAGE&quot;</span>
+<span class="s2">    (</span>
+<span class="s2">    &quot;PRODUCT_ID&quot; text,</span>
+<span class="s2">    &quot;RESTAURANT_ID&quot; text,</span>
+<span class="s2">    &quot;IMAGE_LINK&quot; text,</span>
+<span class="s2">    &quot;DATE&quot; date,</span>
+<span class="s2">    CONSTRAINT &quot;UNIQUE_IMAGES&quot; UNIQUE (&quot;PRODUCT_ID&quot;, &quot;RESTAURANT_ID&quot;)</span>
+<span class="s2">    );</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;COMMIT;&#39;</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Table ODS.EXT_FB_PRODUCT_IMAGE created in </span><span class="si">{execute_time}</span><span class="s2"> seconds.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">execute_time</span><span class="o">=</span><span class="n">end_time</span><span class="o">-</span><span class="n">start_time</span><span class="p">))</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">check_if_table_exists</span><span class="p">(</span><span class="s1">&#39;ODS&#39;</span><span class="p">,</span><span class="s1">&#39;EXT_FB_PRODUCT_IMAGE_SOURCE&#39;</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Table ODS.EXT_FB_PRODUCT_IMAGE_SOURCE already exists.&#39;</span><span class="p">)</span>   
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    CREATE TABLE &quot;ODS&quot;.&quot;EXT_FB_PRODUCT_IMAGE_SOURCE&quot;</span>
+<span class="s2">    (</span>
+<span class="s2">    &quot;IMAGE_LINK&quot; text NOT NULL,</span>
+<span class="s2">    &quot;SOURCE&quot; bytea,</span>
+<span class="s2">    CONSTRAINT &quot;UNIQUE_SOURCE&quot; PRIMARY KEY (&quot;IMAGE_LINK&quot;)</span>
+<span class="s2">    );</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="p">)</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;COMMIT;&#39;</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">trunc</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Table ODS.EXT_FB_PRODUCT_IMAGE_SOURCE created in </span><span class="si">{execute_time}</span><span class="s2"> seconds.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">execute_time</span><span class="o">=</span><span class="n">end_time</span><span class="o">-</span><span class="n">start_time</span><span class="p">))</span>
+
 <span class="k">if</span><span class="p">(</span><span class="n">check_if_table_exists</span><span class="p">(</span><span class="s1">&#39;EDW&#39;</span><span class="p">,</span><span class="s1">&#39;DWH_FB_COMMENT&#39;</span><span class="p">)):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Table EDW.DWH_FB_COMMENT already exists.&#39;</span><span class="p">)</span>   
 <span class="k">else</span><span class="p">:</span>
@@ -14512,6 +14568,8 @@ a.anchor-link {
 <pre>Table ODS.EXT_FB_RESTAURANT already exists.
 Table ODS.EXT_FB_MENU already exists.
 Table ODS.EXT_FB_COMMENT already exists.
+Table ODS.EXT_FB_PRODUCT_IMAGE already exists.
+Table ODS.EXT_FB_PRODUCT_IMAGE_SOURCE already exists.
 Table EDW.DWH_FB_COMMENT already exists.
 </pre>
 </div>
@@ -14773,48 +14831,48 @@ Table EDW.DWH_FB_COMMENT already exists.
   </thead>
   <tbody>
     <tr>
+      <th>40</th>
+      <td>nisantasi-22-sisli-harbiye-mah-istanbul</td>
+    </tr>
+    <tr>
+      <th>73</th>
+      <td>ice-munchies-avcilar-cihangir-mah-istanbul</td>
+    </tr>
+    <tr>
+      <th>45</th>
+      <td>calderon-restaurant-besiktas-levent-mah-istanbul</td>
+    </tr>
+    <tr>
       <th>47</th>
       <td>pizza-2m-kadikoy-caferaga-mah-moda-istanbul</td>
     </tr>
     <tr>
-      <th>31</th>
-      <td>by-bado-sile-kumbaba-mah-istanbul</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>pizza-steak-beylikduzu-kavakli-mah-istanbul</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>crakers-pizza-basaksehir-guvercintepe-mah-ista...</td>
-    </tr>
-    <tr>
-      <th>39</th>
-      <td>ghita-sariyer-huzur-mah-istanbul</td>
+      <th>38</th>
+      <td>pasaport-pizza-maltepe-cevizli-mah-istanbul</td>
     </tr>
     <tr>
       <th>...</th>
       <td>...</td>
     </tr>
     <tr>
-      <th>54</th>
-      <td>ellisse-beyoglu-omeravni-mah-kabatas-istanbul</td>
+      <th>8</th>
+      <td>coffee-la-rue-restaurant-umraniye-yukari-dudul...</td>
     </tr>
     <tr>
-      <th>77</th>
-      <td>peggys-pizza-besiktas-arnavutkoy-mah-istanbul</td>
+      <th>71</th>
+      <td>caffe-di-dosso-dossi-fatih-aksemsettin-mah-ist...</td>
     </tr>
     <tr>
-      <th>33</th>
-      <td>guvecci-pideci-aziz-usta-bayrampasa-cevatpasa-...</td>
+      <th>21</th>
+      <td>familys-cafe-eyup-gokturk-merkez-mah-istanbul</td>
     </tr>
     <tr>
-      <th>1</th>
-      <td>pizzeria-eyup-gokturk-merkez-mah-istanbul</td>
+      <th>6</th>
+      <td>bigs-pizza-tuzla-aydinli-mah-istanbul</td>
     </tr>
     <tr>
-      <th>64</th>
-      <td>un-po-beyoglu-kemankes-mah-istanbul</td>
+      <th>65</th>
+      <td>gardenia-burger-pizza-makarna-sariyer-maslak-m...</td>
     </tr>
   </tbody>
 </table>
@@ -14910,13 +14968,300 @@ Table EDW.DWH_FB_COMMENT already exists.
 </div>
 </div>
 
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    SELECT DISTINCT </span>
+<span class="s2">    &quot;RESTAURANT_ID&quot;,</span>
+<span class="s2">    &quot;DESIGN_TYPE&quot;</span>
+<span class="s2">    FROM &quot;ODS&quot;.&quot;EXT_FB_MENU&quot; EFM</span>
+<span class="s2">    WHERE 1=1</span>
+<span class="s2">    AND EFM.&quot;DESIGN_TYPE&quot; &lt;&gt; &#39;list&#39;</span>
+<span class="s2">    AND NOT EXISTS(SELECT NULL FROM &quot;ODS&quot;.&quot;EXT_FB_PRODUCT_IMAGE&quot; EFPI WHERE EFM.&quot;RESTAURANT_ID&quot; = EFPI.&quot;RESTAURANT_ID&quot;);</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+<span class="n">restaurant_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql_command</span><span class="p">,</span><span class="n">conn</span><span class="p">)</span>
+<span class="n">restaurant_df</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[10]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>RESTAURANT_ID</th>
+      <th>DESIGN_TYPE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>the-boss-pizza-burger-sariyer-maden-mah-istanbul</td>
+      <td>card</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>444-pizza-bagcilar-demirkapi-mah-istanbul</td>
+      <td>card</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>mezzaluna-paket-beykoz-acarlar-mah-acarkent-is...</td>
+      <td>card</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>kafein-plus-kucukcekmece-tevfikbey-mah-sefakoy...</td>
+      <td>card</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>mayk-cafe-sisli-fulya-mah-istanbul</td>
+      <td>card</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>208</th>
+      <td>amigos-burger-pizza-kagithane-merkez-mah-istanbul</td>
+      <td>card</td>
+    </tr>
+    <tr>
+      <th>209</th>
+      <td>konak-firin-avcilar-merkez-mah-istanbul</td>
+      <td>card</td>
+    </tr>
+    <tr>
+      <th>210</th>
+      <td>keyifle-pide-lahmacun-bakirkoy-atakoy-6-kisim-...</td>
+      <td>card</td>
+    </tr>
+    <tr>
+      <th>211</th>
+      <td>havelka-kadikoy-caddebostan-mah-istanbul</td>
+      <td>card</td>
+    </tr>
+    <tr>
+      <th>212</th>
+      <td>heros-pizza-esenyurt-fatih-mah-istanbul</td>
+      <td>card</td>
+    </tr>
+  </tbody>
+</table>
+<p>213 rows × 2 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[11]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">last_execution_date</span> <span class="o">&lt;</span> <span class="n">end_date</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">restaurant_df</span><span class="p">)):</span>
+        <span class="n">sublink</span> <span class="o">=</span> <span class="n">restaurant_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s2">&quot;RESTAURANT_ID&quot;</span><span class="p">]</span>
+        <span class="n">design_type</span> <span class="o">=</span> <span class="n">restaurant_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s2">&quot;DESIGN_TYPE&quot;</span><span class="p">]</span>
+        <span class="n">page_url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{website}</span><span class="s2">/</span><span class="si">{sublink}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">website</span><span class="o">=</span><span class="n">website</span><span class="p">,</span><span class="n">sublink</span><span class="o">=</span><span class="n">sublink</span><span class="p">)</span>
+
+        <span class="n">driver</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">page_url</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        
+        <span class="n">webpage_scroll_down</span><span class="p">(</span><span class="n">driver</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">sublink</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">driver</span><span class="o">.</span><span class="n">current_url</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span><span class="p">(</span><span class="s2">&quot;sipariş verebilirsiniz.&quot;</span> <span class="ow">in</span> <span class="n">driver</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s1">&#39;//*[@id=&quot;restaurantDetail&quot;]/div/div[2]/h3&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">driver</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="n">By</span><span class="o">.</span><span class="n">XPATH</span><span class="p">,</span> <span class="s1">&#39;//*[@id=&quot;alternative-restaurant-popup&quot;]/div[1]/div[2]/img&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">click</span><span class="p">();</span> <span class="c1">#Closing pop-up</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="n">menu</span> <span class="o">=</span> <span class="n">driver</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s1">&#39;//*[@id=&quot;restaurant_menu&quot;]&#39;</span><span class="p">)</span>
+        <span class="n">categories</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">find_elements_by_xpath</span><span class="p">(</span><span class="s1">&#39;//*[contains(@id,&quot;menu_&quot;)]&#39;</span><span class="p">)</span>
+
+        <span class="n">image_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">product</span> <span class="ow">in</span> <span class="n">menu</span><span class="o">.</span><span class="n">find_elements_by_class_name</span><span class="p">(</span><span class="s2">&quot;product-image&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">product_id</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s1">&#39;data-product-id&#39;</span><span class="p">)</span>
+                <span class="n">image_link</span> <span class="o">=</span> <span class="n">product</span><span class="o">.</span><span class="n">find_element_by_xpath</span><span class="p">(</span><span class="s2">&quot;.//img&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s1">&#39;src&#39;</span><span class="p">)</span>
+                <span class="k">if</span><span class="p">(</span><span class="s2">&quot;www.yemeksepeti.com/assets/images/&quot;</span> <span class="ow">in</span> <span class="n">image_link</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">image_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">product_id</span><span class="p">,</span><span class="n">sublink</span><span class="p">,</span><span class="n">image_link</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="n">image_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">image_list</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PRODUCT_ID&quot;</span><span class="p">,</span><span class="s2">&quot;RESTAURANT_ID&quot;</span><span class="p">,</span><span class="s2">&quot;IMAGE_LINK&quot;</span><span class="p">])</span>
+        <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">image_df</span><span class="p">,</span> <span class="s1">&#39;PRODUCT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+        <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">image_df</span><span class="p">,</span> <span class="s1">&#39;RESTAURANT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+        <span class="n">df_column_conversation</span><span class="p">(</span><span class="n">image_df</span><span class="p">,</span> <span class="s1">&#39;IMAGE_LINK&#39;</span><span class="p">,</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>    
+        <span class="n">image_df</span><span class="p">[</span><span class="s1">&#39;DATE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&#39;&quot;</span><span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39;::date&quot;</span>
+        <span class="n">execute_mogrify</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="n">image_df</span><span class="p">,</span><span class="s2">&quot;ODS&quot;</span><span class="p">,</span><span class="s2">&quot;EXT_FB_PRODUCT_IMAGE&quot;</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">driver</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    SELECT DISTINCT</span>
+<span class="s2">    &quot;IMAGE_LINK&quot;</span>
+<span class="s2">    FROM &quot;ODS&quot;.&quot;EXT_FB_PRODUCT_IMAGE&quot; EFPI</span>
+<span class="s2">    WHERE 1=1</span>
+<span class="s2">    AND NOT EXISTS(SELECT NULL FROM &quot;ODS&quot;.&quot;EXT_FB_PRODUCT_IMAGE_SOURCE&quot; EFPIS WHERE EFPIS.&quot;IMAGE_LINK&quot; = EFPI.&quot;IMAGE_LINK&quot;);</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+<span class="n">image_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql_command</span><span class="p">,</span><span class="n">conn</span><span class="p">)</span>
+<span class="n">image_df</span> <span class="o">=</span> <span class="n">image_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">image_df</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[13]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>IMAGE_LINK</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>https://cdn.yemeksepeti.com/ProductImages/TR_I...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image_df</span><span class="p">)):</span>
+    <span class="n">page_url</span> <span class="o">=</span> <span class="n">image_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s2">&quot;IMAGE_LINK&quot;</span><span class="p">]</span>
+    <span class="n">image_file_name</span> <span class="o">=</span> <span class="s2">&quot;images/product.jpg&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">page_url</span><span class="p">,</span> <span class="n">image_file_name</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">image_binary</span> <span class="o">=</span> <span class="n">psycopg2</span><span class="o">.</span><span class="n">Binary</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">image_file_name</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    INSERT INTO &quot;ODS&quot;.&quot;EXT_FB_PRODUCT_IMAGE_SOURCE&quot; (&quot;IMAGE_LINK&quot;,&quot;SOURCE&quot;) </span>
+<span class="s2">    VALUES(&#39;</span><span class="si">{image_link}</span><span class="s2">&#39;,</span><span class="si">{image_binary}</span><span class="s2">)</span>
+<span class="s2">    ON CONFLICT DO NOTHING;</span>
+<span class="s2">    &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">image_link</span><span class="o">=</span><span class="n">page_url</span><span class="p">,</span> <span class="n">image_binary</span><span class="o">=</span><span class="n">image_binary</span><span class="p">))</span>
+    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;COMMIT;&#39;</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14932,7 +15277,7 @@ Table EDW.DWH_FB_COMMENT already exists.
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[15]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span><span class="p">(</span><span class="n">last_execution_date</span> <span class="o">&lt;</span> <span class="n">end_date</span><span class="p">):</span>
@@ -14986,7 +15331,7 @@ Table EDW.DWH_FB_COMMENT already exists.
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -15011,7 +15356,7 @@ Table EDW.DWH_FB_COMMENT already exists.
 <div class="jp-OutputArea-child">
 
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[16]:</div>
 
 
 
@@ -15181,7 +15526,7 @@ Table EDW.DWH_FB_COMMENT already exists.
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">stop_words</span> <span class="o">=</span> <span class="p">[</span><span class="n">element</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;turkish&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">element</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;çok&#39;</span><span class="p">,</span><span class="s1">&#39;eğer&#39;</span><span class="p">,</span><span class="s1">&#39;gibi&#39;</span><span class="p">,</span><span class="s1">&#39;hiç&#39;</span><span class="p">,</span><span class="s1">&#39;niçin&#39;</span><span class="p">,</span><span class="s1">&#39;niye&#39;</span><span class="p">,</span><span class="s1">&#39;sanki&#39;</span><span class="p">,</span><span class="s1">&#39;yani&#39;</span><span class="p">,</span><span class="s1">&#39;en&#39;</span><span class="p">,</span><span class="s1">&#39;az&#39;</span><span class="p">,</span><span class="s1">&#39;birkaç&#39;</span><span class="p">,</span><span class="s1">&#39;bazı&#39;</span><span class="p">,</span><span class="s1">&#39;aslında&#39;</span><span class="p">,</span><span class="s1">&#39;neden&#39;</span><span class="p">,</span><span class="s1">&#39;hepsi&#39;</span><span class="p">]]</span>
@@ -15203,7 +15548,7 @@ Table EDW.DWH_FB_COMMENT already exists.
 <div class="jp-OutputArea-child">
 
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[13]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[17]:</div>
 
 
 
@@ -15388,7 +15733,7 @@ Table EDW.DWH_FB_COMMENT already exists.
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
@@ -15471,7 +15816,7 @@ Precision Score for FLAVOUR: 28.87%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[15]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[19]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
@@ -15548,7 +15893,7 @@ Precision Score for FLAVOUR: 62.00%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[20]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
@@ -15625,7 +15970,7 @@ Precision Score for FLAVOUR: 58.20%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[21]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
@@ -15711,7 +16056,7 @@ Precision Score for FLAVOUR: 59.33%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[18]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[22]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
@@ -15793,7 +16138,7 @@ Precision Score for FLAVOUR: 63.12%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[19]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[23]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
@@ -15876,7 +16221,7 @@ Precision Score for FLAVOUR: 28.57%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[20]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[24]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
@@ -15964,7 +16309,7 @@ Precision Score for FLAVOUR: 63.53%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[21]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[25]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
@@ -16041,7 +16386,7 @@ Precision Score for FLAVOUR: 61.67%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[22]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[26]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
@@ -16127,7 +16472,7 @@ Precision Score for FLAVOUR: 60.03%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[23]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[27]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;SPEED&#39;</span><span class="p">,</span><span class="s1">&#39;SERVING&#39;</span><span class="p">,</span><span class="s1">&#39;FLAVOUR&#39;</span><span class="p">]:</span>
@@ -16204,7 +16549,7 @@ Precision Score for FLAVOUR: 63.96%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[24]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[28]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -16236,7 +16581,7 @@ Precision Score for FLAVOUR: 63.96%
 <div class="jp-OutputArea-child">
 
     
-    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[24]:</div>
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[28]:</div>
 
 
 
@@ -16309,7 +16654,7 @@ Precision Score for FLAVOUR: 63.96%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[25]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[29]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
@@ -16364,7 +16709,7 @@ Precision Score for FLAVOUR: 63.96%
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[26]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[30]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">restaurant_df</span><span class="p">[</span><span class="s1">&#39;clean_comment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">restaurant_df</span><span class="p">[</span><span class="s1">&#39;all_comment&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">clean_text</span><span class="p">)</span>
@@ -16393,26 +16738,258 @@ Precision Score for FLAVOUR: 63.96%
 
 
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
-<pre>0.  yemek çok güzeldi semih beye ilgisinden dolayı tesekkurler atakan kardeşim sağolsun çok ilgili atakan beye ikramları için teşekkürler tatlı için ayrıca teşekkürler gayet lezzetli ve hızlıydı başarıların devamını diliyorum herzaman hızlı ve harika bir sunum teşekkürler başarılınızın devamını dilerim semih beye selam 
-1.  yemek çok güzeldi semih beye ilgisinden dolayı teşekkür ederiz her puanın karşılığını hakediyorlar her zamanki gibi harikaydı kurye arkadaşa da süperdi başka söz bulamadım sürekli sipariş verdiğim yer her zaman ki çok sıcak olduğu için çok teşekkür ediyorum siparişi getiren ali beyin 
-2.  yemek çok lezzetliydi ve yanında 2 adet ikram sufle geldi pizza sıcaktı beğendim tam puan veriyorum atakan beye ikramdan dolayı teşekkürlerimi dile getirmek isterim kurye beye ve de pizzanın ulaşması için arayan çalışanınıza çok teşekkür ederim her şey çok lezzetli ve hızlıydı 
-3.  yemek çok güzeldi semih beye ilgisinden ve ikramından dolayı özellikle çok teşekkür ederim bir numaralı bulls şubesi bilal bey siparisi verdikten hemen sonra iletisime gecerek siparis durumu ile ilgili bilgi verdi ayrica ikram olarak semih bey ve teslim eden ali beye çok 
-4.  yemek çok lezzetliydi ve restoran bana çok yakın olmamasına rağmen sıcaktı da soğan halkaları da ayrıca teşekkürler zincir pizzacılar arasında üsküdarda fark yaratan hız ve lezzet iyi idi fakat 50 dk nın üzerinde gelince patates kızartması çalışan getiren emeği geçen herkese teşekkür 
-5.  yemek çok güzeldi semih beye ilgisinden ve tatli ikramindan dolayi cok tesekkur ederim bayram günü geç saatlere kadar servis yapan iyi birine benziyor sıcak geldi güzeldi sipariş detayı karışmış peynirli kenar yanlış pizaya yapılmış yoğunluktan biraz geç gelse de sipariş verdiğim pizza 
-6.  yemek çok lezzetliydi ve hızlıydı tesekkurler çok hızlı geldi ayrıca gönderdiğiniz sufleler için ayrıca teşekkür ediyoruz pizza kalitesinden ve servisinden dolayı ali beye teşekkürler ikram tatlı için teşekkür ederiz mustafa beyede teşekkür ederim pizza siparişi için bence uzun bir süreydi suffle tamamen 
-7.  yemek çok lezzetliydi ve kuriyeniz atakan bey çok nazik teşekkürler hız lezzet mükemmel kurye arkadaşlara da çok teşekkürler çok ilgiliydi ve tatlı ikramında bulundu pizzalar da gayet lezzetliydi ve hızlı getirdi kurye çok güler yüzlü çok iyi biriydi hız da çok iyiydi 
-8.  yemek çok güzeldi semih bey harikasınız maşallah size bize her zaman siz getirin ve sufle getirin mükemmel hizmet gayet hızlı geldi lezzet servis ve lezzet iyi idi fakat 50 dk nın üzerinde gelince patates kızartması ve pizza biraz soğumuştu sıcacık ve hızlı 
-9.  yemek çok güzeldi semih beyin özel ilgisi için çok teşekkür ederim her şey harikaydı i̇lgililer her şey çok güzeldi sufle ayrı bir lezzet vermektedir son iki siparişimizde neden olduğunu bilmediğimiz sekilde midemize dokunuyor sufle için teşekkürler atakan beye tatlı ikramı ve ilgisinden 
-10.  yemek çok güzeldi semih beye teşekkürler sufleler için çok teşekkürler çok beğendik çok güzel değildi 1 saatte eksik sosla geldi pizza sıcak gelsede ödeme yapmakla geçen 15 dakikada soğumuş oluyor lezzet harika servis çok iyiydi kısa sürede sipariş elimize ulaştı ve gayet 
-11.  yemek çok lezzetliydi ve hızlı ulaştı servisi yapan arkadaş ali beye çok teşekkür ederim atakan beye teşekkürler promosyon tatlı istemiyorum beğenmedim beklediğimden çok daha iyiydi bilal bey cok kibardi bilal beye çok teşekkür ederim atakan beye ozellikle tesekkurler her seyiyle on numara 
-12.  yemek çok güzeldi semih bey harikasınız sıcak geldi sadece elma dilim patatesler hamur gibiydi onun dışında her şey çok güzeldi semih beyin ilgisine de teşekkürler los angelos pizzalar harika özellikle atakana çok teşekkür ederiz servis ve lezzetli yemekler daha ne olsun yeri 
-13.  yemek çok güzeldi semih beyin özel ilgisi için teşekkür ederiz siparişim hızlı ve sıcacık geldi sipariş vermekten hiçbir zaman pişman olmadım 22 dakika sıcak ve lezzetli ve müşteri memnuniyetini önemseyen personeli ile güzel bir yemekti emekleriniz için çok teşekkürler muhteşem bir pazar 
-14.  yemek çok güzeldi semih beye teşekkürler her zamanki gibi müthiş beğenerek söylüyoruz roket burger ailesi bilal bey çok kibardı teşekkür ederiz bilal beyin iletisimi cok iyiyiydi ve her şey sıcak geldi çok teşekkür ederim atakan bey kurye 2 tane multinetten çektiği için 
-15.  yemek çok lezzetliydi ve yanında 2 adet ikram sufle geldi pizza sıcaktı beğendim tam puan veriyorum bu kez i̇ki katlı çedar hamur istemiştik fakat çedarı çok az geldi kurye çok nazikti yemeğim sıcak ve çok lezzetliydi ayrıca tatlı ikramı için teşekkür ederiz 
-16.  yemek çok güzeldi semih bey harikasınız sıcak geldi çok lezzetliydi sufle ikraminiz icin tesekkur ederiz pizzalarınız harika ve ilgili bir restoran i̇kram icin de coook tesekkurler burak beyin hızlı servisi ile süperdi caner beye güler yüzlülüğü için teşekkürler ama pizzalar çok sıcaktı 
-17.  yemek çok lezzetliydi ve hızlıydı tesekkurler çok hızlı dumanı üstünde geliyor ama peynir kenarlı seçim yapmıştım fakat normal hamur çok kalındı ve ekmek yediğimi hissettim bir an i̇yi değildi jokerle sipariş vermemize rağmen her şey çok güzeldi tatlı için teşkkrederiz pizzalar sıcak 
-18.  yemek çok lezzetliydi ve restoran bana çok yakın olmamasına rağmen sıcaktı da soğan halkaları için de teşekkür ederim pizza lezizdi her zamanki gibi tatlı için de teşekkür ederim her zaman olduğu gibi lezzetliydi semih beye nezaketi için teşekkür ederim sucukta olabilirdi icinde 
-19.  yemek çok güzeldi semih beye çok teşekkürler ellerinize sağlık favori pizzacımız hiçbir olumsuzlukla karşılaşmadık senelerdir zaman zaman siparişimizle gelen hediye suffle için çok teşekkür ederiz sanitasyon koşullarına biraz daha dikkat edilmesi lazım bence bir de zeytin çekirdeği çıktı hazır alınıyor sonuçta tedarikçinin 
+<pre>0.  yemek çok lezzetliydi ve restoran bana çok yakın olmamasına rağmen sıcaktı da soğan halkaları için de çok teşekkür ederim atakan beye ve tüm ekibe teşekkür ederim pizzalar sıcak ve lezzetli geldi tatlı ikramınız için çok teşekkürler her şey çok iyiydi getiren arkadaşları 
+1.  yemek çok lezzetliydi ve yanında 2 adet ikram sufle geldi i̇ftar vakti olmasına rağmen vaktinde geldi bilal beye teşekkür ederim bilal beye sufle için atakan beye ilgi ve ikram için yunus beye çok teşekkür ederiz restorandan beni arayan restoran çalışanı oldukça içten 
+2.  yemek çok lezzetliydi ve kurye de cok nazikti cheddar yoktu resmen çok basit bir not yazdık evde uyuyanlar lütfen zile basmayın notları okumayacaksanız söyleyelim yemeksepetine kaldırsınlar çok güzel her zamanki gibi mükemmel ayrıca ikram için teşekkür ederim pizza siparişi için en lezzetli 
+3.  yemek çok lezzetliydi ve restoran bana çok yakın olmamasına rağmen sıcaktı da soğan halkaları da ayrıca yanıktı restoran müdürü bayagı ilgiliydihızlı ve sıcak geldi kezzetliydi ancak ince hamur en sevdiğimiz çalışanların hepsi çok nazik ve işlerini çok iyi çok iyiydi teşekkürler tam 
+4.  yemek çok güzeldi semih beye çok teşekkürler ellerinize sağlık çok güzeldi bu sebeple ayrı bir teşekkürü hakediyorsunuz merhaba pizza bullsu tercih edeceğim dahi soruldu restoran siparişi aldığı andan teslim ettiği ana kadar son derece memnun kaldım bilal beye çok teşekkürler muazzam mustafa 
+5.  yemek çok güzeldi semih bey harikasınız sıcak geldi atakan kardeşim sağolsun çok kibar teşekkür ederim atakan beye teşekkürler bana tatlı hediye göndermişler çok hoşuma gitti teşekkür ediyorum kendilerine bilal bey muhteşem bir pazar akşamı keyfi yaşadık bilal beye cok teşekkür ederiz her 
+6.  yemek çok güzeldi semih beye çok teşekkür her şey harikaydı i̇lgililer her şey çok güzeldi ta ki eleman bozuk yok kalanını bir sonraki siparişte halledelim diyene kadar bana borçlusunuz her şey çok güzeldi üstelik tatlı ikramları için de çok teşekkür ederim tatlı 
+7.  yemek çok güzeldi semih beye çok teşekkür ederiz bilal beye mükemmel iletişimi ve desteği için teşekkür ederim atakan beye teşekkürler bilal beye teşekkür ederiz ismini unuttum lezizdi ve cok cabuk geldi lezzetli hızlı lezzetliydi atakan beye ilgisinden dolayı çok teşekkür ederim ellerinize 
+8.  yemek çok lezzetliydi ve hızlıydı tesekkurler çok hızlı hem de pismemis olarak nasil gonderebildiniz tebrik ederim pizza çok güzel ve sıcaktı teşekkür ederim harika hatalarını telafi etmek için elinden geleni yapan bir firma fiyatlar yüksek ama kaliteli hediye tatlım gelmedi ama kurye 
+9.  yemek çok lezzetliydi ve kuriyeniz atakan bey çok nazik ve tam bir beyefendi olan burak beye de teşekkürler kuryeniz burak çok kibardı hızlı geldi ayrıca hediye olarak tatlı getirmişler teşekkür ediyorum kuryenize de geçmiş olsun her zaman tercih ettiğim bir yer her 
+10.  yemek çok lezzetliydi ve her şey çok güzeldi atakan ustam eline sağlık pizzaları aşırı güzel ve en lezzetli pizzalardan biriydi ayrıca gönderdiğiniz sufleler için de ayrıca çok teşekkürler ayrıca siparişimde tam zamanında geldi berbat bilal bey çok ilgili birisi i̇yi kenan beye 
+11.  yemek çok lezzetliydi ve getiren arkadasta cok hizli getirdi ve adres çok tarif edilemez bir yerde ol asına rağmen konumu buldu lezzet desen mükemmel ilgi desen 10 numara hizmet bilal bey çok sağolsun çok kibar ve işin ehli atakan kardeşime teşekkürler kurye 
+12.  yemek çok lezzetliydi ve hızlıydı tesekkurler çok hızlı ve çok nazikler teşekkürler atakan abiya selam bir sonrakine ikramını bekleriz atakan beye ozel ilgilerinden dolayi tesekkur ederiz i̇lgisi icin semih beye ikramı için teşekkürler atakan beye ve tüm ekibe teşekkürler lezzetiniz çok kotuydu 
+13.  yemek çok lezzetliydi ve sıcak geldi çok lezzetliydi ve kurye arkadaşımıza teşekkür ederim siparişimde soğan halkası unutulmuştu ama sorun değil anlayabiliyoruz emeklerinize sağlık sizden sipariş vermeye devam atakan beye güler yüzlülüğünden dolayı 10 puan lezzet bilal beye ekstra tesekkur ediyorum orta boy 
+14.  yemek çok lezzetliydi ve her şey çok güzel bir yemekti tesekkurler engin kurye berat beye tesekkur ederim restoransa her zamanki gibi lezzetli bir pizza geldi hizli olmadgi icin de sogumustu sürekli alışveriş yaptığım çok da memnun kaldım elma dilim patateslerde çiğ tadı 
+15.  yemek çok lezzetliydi ve her şey çok lezzetli çok seviyorum 3 şu yaşıma kadar kaç adet kurye gördüm hiçbiri mustafanın parmağı olamaz 10puan mustafa için tahmini sipariş süresi uzun da olsa gelen pizza gayet sıcaktı küçük tatlı hediyeleri çok güzel hizmetleriniz için 
+16.  yemek çok güzeldi semih beye teşekkürler tam anlamı ile türkiyenin zincir pizzacıları içinde 1 numara uzun yıllardır severek sipariş verdiğim için yapıcı olması adına bu yorumu yazıyorum i̇yi çalışmalar dilerim her zaman harika her zamanki gibi muhteşem bir hizmet verdi bilal beye 
+17.  yemek çok lezzetliydi ve hızlı ulaştı he zamanki gibi cumali beye ayrıca teşekkürler çok nazikdi pizza ve sufle gelmedi madem öyle bari hiç konuşmasaydık kendi tatlı siparişimizi de boş yere iptal ettik biraz dikkat lütfen efsanesiniz tek sorun pizza kesimleri en iyisi 
+18.  yemek çok lezzetliydi ve hızlıydı tesekkurler çok hızlı bize ulaştırdığı için teşekkür ederiz newyork ve boston pizza sipariş vereceksem tercih ettiğim tek restaurant pizza bulls oluyor çok teşekkür ederim 10 üzerinden 100 verilesi muhteşem ilgisi ve ince ikramları için çok teşekkür ederim 
+19.  yemek çok güzeldi semih beye ilgisinden dolayı teşekkür ediyorum yağmur olmasına rağmen lezzetiyle telafi ediyor lezzet ve servis mükemmel teşekkürler mustafa bey çok teşekkürler pizzası leziz o kadar güzel bir pizza markasıydı tadı hala güzel 45 dk da geldi hediye olarak sufle 
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Convolutional-Neural-Network">Convolutional Neural Network<a class="anchor-link" href="#Convolutional-Neural-Network">&#182;</a></h2>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[31]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sql_command</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    SELECT</span>
+<span class="s2">    DISTINCT</span>
+<span class="s2">    FPI.&quot;IMAGE_LINK&quot;,</span>
+<span class="s2">    FPIS.&quot;SOURCE&quot;,</span>
+<span class="s2">    CASE WHEN LOWER(EFM.&quot;CATEGORY_NAME&quot;) LIKE &#39;%pizza%&#39; OR LOWER(EFM.&quot;PRODUCT_NAME&quot;) LIKE &#39;%pizza%&#39; OR LOWER(EFM.&quot;PRODUCT_DESCRIPTION&quot;) LIKE &#39;%pizza%&#39; THEN 1 ELSE 0 END AS &quot;IS_PIZZA&quot;</span>
+<span class="s2">    FROM &quot;ODS&quot;.&quot;EXT_FB_MENU&quot; EFM</span>
+<span class="s2">    INNER JOIN &quot;ODS&quot;.&quot;EXT_FB_PRODUCT_IMAGE&quot; FPI ON (EFM.&quot;PRODUCT_ID&quot; = FPI.&quot;PRODUCT_ID&quot;)</span>
+<span class="s2">    INNER JOIN &quot;ODS&quot;.&quot;EXT_FB_PRODUCT_IMAGE_SOURCE&quot; FPIS ON (FPI.&quot;IMAGE_LINK&quot; = FPIS.&quot;IMAGE_LINK&quot;);</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+<span class="n">image_source_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql</span><span class="p">(</span><span class="n">sql_command</span><span class="p">,</span><span class="n">conn</span><span class="p">)</span>
+<span class="n">image_source_df</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[31]:</div>
+
+
+
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>IMAGE_LINK</th>
+      <th>SOURCE</th>
+      <th>IS_PIZZA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>https://cdn.yemeksepeti.com/ProductImages/corb...</td>
+      <td>[b'\xff', b'\xd8', b'\xff', b'\xe0', b'\x00', ...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>https://cdn.yemeksepeti.com/ProductImages/corb...</td>
+      <td>[b'\xff', b'\xd8', b'\xff', b'\xe0', b'\x00', ...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>https://cdn.yemeksepeti.com/ProductImages/corb...</td>
+      <td>[b'\xff', b'\xd8', b'\xff', b'\xe0', b'\x00', ...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>https://cdn.yemeksepeti.com/ProductImages/corb...</td>
+      <td>[b'\xff', b'\xd8', b'\xff', b'\xe0', b'\x00', ...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>https://cdn.yemeksepeti.com/ProductImages/corb...</td>
+      <td>[b'\xff', b'\xd8', b'\xff', b'\xe0', b'\x00', ...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>4961</th>
+      <td>https://cdn.yemeksepeti.com/restaurant/TR_ISTA...</td>
+      <td>[b'\xff', b'\xd8', b'\xff', b'\xe0', b'\x00', ...</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4962</th>
+      <td>https://cdn.yemeksepeti.com/restaurant/TR_ISTA...</td>
+      <td>[b'\xff', b'\xd8', b'\xff', b'\xe0', b'\x00', ...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4963</th>
+      <td>https://cdn.yemeksepeti.com/restaurant/TR_ISTA...</td>
+      <td>[b'\xff', b'\xd8', b'\xff', b'\xe0', b'\x00', ...</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4964</th>
+      <td>https://cdn.yemeksepeti.com/restaurant/TR_ISTA...</td>
+      <td>[b'\xff', b'\xd8', b'\xff', b'\xe0', b'\x00', ...</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4965</th>
+      <td>https://cdn.yemeksepeti.com/restaurant/TR_ISTA...</td>
+      <td>[b'\xff', b'\xd8', b'\xff', b'\xe0', b'\x00', ...</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>4966 rows × 3 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[34]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1">#image_id = []</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">image_source_df</span><span class="p">)):</span>
+    <span class="n">image_source</span> <span class="o">=</span> <span class="n">byte_image_to_numpy_array</span><span class="p">(</span><span class="n">image_source_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;SOURCE&quot;</span><span class="p">],</span> <span class="mi">200</span><span class="p">)</span>
+    <span class="n">is_pizza</span> <span class="o">=</span> <span class="n">image_source_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;IS_PIZZA&quot;</span><span class="p">]</span>
+    <span class="c1">#image_id.append(image_source_df.iloc[i][&quot;IMAGE_LINK&quot;])</span>
+    <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">image_source</span><span class="p">)</span>
+    <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">is_pizza</span><span class="p">)</span>
+
+<span class="c1">#Image.fromarray(features[2381])</span>
+
+<span class="n">features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">features</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span><span class="o">/</span><span class="mi">255</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">np_utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Feature Shape: </span><span class="si">{f_shape}</span><span class="s2"> Label Shape: </span><span class="si">{l_shape}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f_shape</span><span class="o">=</span><span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">l_shape</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+
+<span class="n">features_train</span><span class="p">,</span> <span class="n">features_test</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">labels_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">test_size</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">9</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">,</span>
+                           <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">),</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">strides</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">relu</span><span class="p">),</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span>  <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">softmax</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">,</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span><span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features_train</span><span class="p">,</span> <span class="n">labels_train</span><span class="p">,</span> <span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">epochs</span> <span class="o">=</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">features_test</span><span class="p">,</span> <span class="n">labels_test</span><span class="p">))</span>
+<span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">features_test</span><span class="p">,</span> <span class="n">labels_test</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Score: &quot;</span><span class="p">,</span> <span class="n">score</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test accuracy: &quot;</span><span class="p">,</span> <span class="n">score</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain">
+<pre>Feature Shape: (4966, 200, 200, 3) Label Shape: (4966, 2)
+Epoch 1/5
+218/218 [==============================] - 88s 402ms/step - loss: 0.5073 - accuracy: 0.7604 - val_loss: 0.5369 - val_accuracy: 0.7584
+Epoch 2/5
+218/218 [==============================] - 87s 397ms/step - loss: 0.2859 - accuracy: 0.8789 - val_loss: 0.3591 - val_accuracy: 0.8497
+Epoch 3/5
+218/218 [==============================] - 87s 397ms/step - loss: 0.2053 - accuracy: 0.9163 - val_loss: 0.3146 - val_accuracy: 0.8792
+Epoch 4/5
+218/218 [==============================] - 87s 401ms/step - loss: 0.1574 - accuracy: 0.9376 - val_loss: 0.3462 - val_accuracy: 0.8779
+Epoch 5/5
+218/218 [==============================] - 89s 407ms/step - loss: 0.1129 - accuracy: 0.9571 - val_loss: 0.2569 - val_accuracy: 0.8993
+Test Score:  0.2569006085395813
+Test accuracy:  0.899328887462616
 </pre>
 </div>
 </div>
@@ -16435,6 +17012,9 @@ Precision Score for FLAVOUR: 63.96%
 <li><a href="https://stackabuse.com/scikit-learn-save-and-restore-models">Scikit-Learn: Save &amp; Restore Models</a></li>
 <li><a href="https://stackoverflow.com/questions/12615525/what-are-the-different-use-cases-of-joblib-versus-pickle">Joblib vs Pickle</a></li>
 <li><a href="https://stackoverflow.com/questions/9031783/hide-all-warnings-in-ipython">Hide warnings in Python</a></li>
+<li><a href="https://stackoverflow.com/questions/30942041/slow-scrolling-down-the-page-using-selenium">Slow scrolling down the page using selenium</a></li>
+<li><a href="https://stackoverflow.com/questions/49627458/python-selenium-download-images-jpeg-png-or-pdf-using-chromedriver">Download images using urllib</a></li>
+<li><a href="https://stackoverflow.com/questions/16763904/how-to-save-a-image-file-on-a-postgres-database">Saving an image to Postgres</a></li>
 </ol>
 
 </div>
