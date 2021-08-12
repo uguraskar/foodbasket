@@ -8,3 +8,5 @@ eda_restaurant.html
 eda_comment.html
 eda_menu.html
 eda_product_image.html
+*.csv
+eda_service.html
